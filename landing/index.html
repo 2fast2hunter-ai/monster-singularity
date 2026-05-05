@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AETERNUM: Monster Singularity — Breed impossible creatures. Manage genetic chaos. Build an ecosystem that spans years. 10,000+ species. One outcome: singularity." />
+  <meta property="og:title" content="AETERNUM: Monster Singularity" />
+  <meta property="og:description" content="Breed them. Fear them. Build the impossible." />
+  <meta property="og:type" content="website" />
+  <title>AETERNUM: Monster Singularity — Breed. Fear. Build the Impossible.</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #07070d;
+      --bg2:       #0d0d1a;
+      --bg3:       #12122a;
+      --violet:    #7b2fff;
+      --violet-dim:#4a1eaa;
+      --green:     #00ffaa;
+      --green-dim: #00c47f;
+      --red:       #ff3c5a;
+      --text:      #dde0f0;
+      --muted:     #7a7a99;
+      --border:    rgba(123,47,255,0.25);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: rgba(7,7,13,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 1rem; font-weight: 800; letter-spacing: 0.12em;
+      color: var(--green); text-transform: uppercase;
+    }
+    .nav-logo span { color: var(--violet); }
+    .nav-cta {
+      background: var(--violet); color: #fff;
+      border: none; border-radius: 6px;
+      padding: 0.5rem 1.1rem; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; text-decoration: none;
+      transition: background 0.2s;
+    }
+    .nav-cta:hover { background: #6020e0; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100svh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 7rem 1.5rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(123,47,255,0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 75% 80%, rgba(0,255,170,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--green); margin-bottom: 1.25rem;
+    }
+    .hero-title {
+      font-size: clamp(2.2rem, 8vw, 5rem);
+      font-weight: 900; line-height: 1.05;
+      letter-spacing: -0.02em; margin-bottom: 0.75rem;
+    }
+    .hero-title .word-breed { color: var(--green); }
+    .hero-title .word-fear  { color: var(--red); }
+    .hero-subtitle {
+      font-size: clamp(0.95rem, 2.5vw, 1.25rem);
+      color: var(--muted); max-width: 540px;
+      margin: 0 auto 2.5rem;
+    }
+    .hero-tagline {
+      display: inline-block;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--violet);
+      border: 1px solid var(--violet); border-radius: 4px;
+      padding: 0.35rem 0.85rem; margin-bottom: 2.5rem;
+    }
+    .hero-actions {
+      display: flex; flex-direction: column; gap: 0.75rem;
+      align-items: center; width: 100%;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--violet), var(--violet-dim));
+      color: #fff; border: none; border-radius: 8px;
+      padding: 0.9rem 2.2rem; font-size: 1rem; font-weight: 700;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 0 32px rgba(123,47,255,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+      width: 100%; max-width: 320px;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 48px rgba(123,47,255,0.6);
+    }
+    .btn-secondary {
+      background: transparent; color: var(--muted);
+      border: none; font-size: 0.875rem; cursor: pointer;
+      text-decoration: underline; text-underline-offset: 3px;
+    }
+    .hero-spec {
+      margin-top: 3rem; font-size: 0.75rem; color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .hero-spec strong { color: var(--text); }
+
+    /* ── CORE LOOP ── */
+    .section { padding: 5rem 1.5rem; }
+    .section-inner { max-width: 700px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--green); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 5vw, 2.5rem);
+      font-weight: 900; line-height: 1.1; margin-bottom: 1.25rem;
+    }
+    .section-body {
+      color: var(--muted); font-size: 1rem; line-height: 1.75;
+    }
+    .core-loop-bg { background: var(--bg2); }
+
+    .loop-steps {
+      display: flex; flex-direction: column; gap: 0; margin-top: 2.5rem;
+    }
+    .loop-step {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1.25rem; border-left: 2px solid var(--border);
+      position: relative;
+    }
+    .loop-step + .loop-step { margin-top: 0; }
+    .loop-step-num {
+      flex-shrink: 0; width: 2rem; height: 2rem;
+      border-radius: 50%; background: var(--bg3);
+      border: 1px solid var(--violet); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 800; color: var(--violet);
+    }
+    .loop-step-text strong { color: var(--text); display: block; margin-bottom: 0.25rem; }
+    .loop-step-text p { color: var(--muted); font-size: 0.9rem; }
+
+    .warning-box {
+      margin-top: 2rem; padding: 1rem 1.25rem;
+      background: rgba(255,60,90,0.08);
+      border: 1px solid rgba(255,60,90,0.3);
+      border-radius: 8px; font-size: 0.875rem;
+      color: var(--red);
+    }
+    .warning-box strong { display: block; margin-bottom: 0.25rem; }
+
+    /* ── FEATURES ── */
+    .features { background: var(--bg); }
+    .features-grid {
+      display: grid; gap: 1.5rem; margin-top: 2.5rem;
+    }
+    .feature-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.75rem;
+      position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+    }
+    .feature-card.genetics::before  { background: var(--green); }
+    .feature-card.species::before   { background: var(--violet); }
+    .feature-card.time::before      { background: var(--red); }
+
+    .feature-icon {
+      font-size: 2rem; margin-bottom: 1rem; display: block;
+    }
+    .feature-title {
+      font-size: 1.2rem; font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .feature-card.genetics .feature-title { color: var(--green); }
+    .feature-card.species  .feature-title { color: var(--violet); }
+    .feature-card.time     .feature-title { color: var(--red); }
+    .feature-body { color: var(--muted); font-size: 0.9rem; line-height: 1.65; }
+    .feature-stat {
+      margin-top: 1rem; padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--muted);
+    }
+    .feature-stat strong { color: var(--text); font-size: 1.1rem; display: block; }
+
+    /* ── STABILITY CLASSES ── */
+    .stability { background: var(--bg2); }
+    .stability-list {
+      display: flex; flex-direction: column; gap: 0.75rem;
+      margin-top: 2rem;
+    }
+    .stability-item {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--bg3); border-radius: 8px;
+      padding: 0.875rem 1.25rem;
+    }
+    .stability-badge {
+      flex-shrink: 0; font-size: 0.65rem; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.25rem 0.6rem; border-radius: 4px;
+      min-width: 80px; text-align: center;
+    }
+    .s1 { background: rgba(0,255,170,0.15); color: var(--green); border: 1px solid rgba(0,255,170,0.3); }
+    .s2 { background: rgba(100,200,255,0.15); color: #64c8ff; border: 1px solid rgba(100,200,255,0.3); }
+    .s3 { background: rgba(255,200,50,0.15); color: #ffc832; border: 1px solid rgba(255,200,50,0.3); }
+    .s4 { background: rgba(255,100,50,0.15); color: #ff6432; border: 1px solid rgba(255,100,50,0.3); }
+    .s5 { background: rgba(255,60,90,0.15); color: var(--red); border: 1px solid rgba(255,60,90,0.3); }
+    .stability-name { font-weight: 700; font-size: 0.9rem; }
+    .stability-desc { font-size: 0.8rem; color: var(--muted); margin-top: 0.1rem; }
+
+    /* ── WAITLIST ── */
+    .waitlist { background: var(--bg); text-align: center; }
+    .waitlist .section-inner { max-width: 560px; }
+    .waitlist-form {
+      display: flex; flex-direction: column; gap: 0.75rem;
+      margin-top: 2rem;
+    }
+    .waitlist-input {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.9rem 1.1rem;
+      color: var(--text); font-size: 1rem;
+      outline: none; width: 100%;
+      transition: border-color 0.2s;
+    }
+    .waitlist-input::placeholder { color: var(--muted); }
+    .waitlist-input:focus { border-color: var(--violet); }
+    .waitlist-submit {
+      background: linear-gradient(135deg, var(--violet), var(--violet-dim));
+      color: #fff; border: none; border-radius: 8px;
+      padding: 0.9rem; font-size: 1rem; font-weight: 700;
+      cursor: pointer; width: 100%;
+      box-shadow: 0 0 32px rgba(123,47,255,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .waitlist-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 48px rgba(123,47,255,0.6);
+    }
+    .waitlist-note {
+      font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem;
+    }
+    .waitlist-count {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.8rem; color: var(--green);
+      background: rgba(0,255,170,0.08);
+      border: 1px solid rgba(0,255,170,0.2);
+      border-radius: 20px; padding: 0.35rem 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .waitlist-count::before {
+      content: ''; width: 6px; height: 6px;
+      background: var(--green); border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem 1.5rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted); font-size: 0.8rem;
+    }
+    footer .footer-brand { font-weight: 800; color: var(--text); margin-bottom: 0.5rem; }
+
+    /* ── DESKTOP OVERRIDES ── */
+    @media (min-width: 640px) {
+      .hero-actions { flex-direction: row; justify-content: center; }
+      .btn-primary { width: auto; }
+      .features-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">AETER<span>NUM</span></div>
+    <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">Alpha — Coming Soon</p>
+    <h1 class="hero-title">
+      <span class="word-breed">Breed</span> them.<br>
+      <span class="word-fear">Fear</span> them.<br>
+      Build the impossible.
+    </h1>
+    <p class="hero-subtitle">
+      An idle ecosystem where your monsters evolve, eat each other,
+      and push toward a singularity that unfolds over years of real time.
+    </p>
+    <div class="hero-tagline">AETERNUM: Monster Singularity</div>
+    <div class="hero-actions">
+      <a href="#waitlist" class="btn-primary">Get Early Access</a>
+      <button class="btn-secondary" onclick="document.getElementById('loop').scrollIntoView({behavior:'smooth'})">See how it works ↓</button>
+    </div>
+    <p class="hero-spec">
+      <strong>10,000+</strong> unique species &nbsp;·&nbsp;
+      <strong>5</strong> stability classes &nbsp;·&nbsp;
+      Offline-capable &nbsp;·&nbsp; Mobile
+    </p>
+  </section>
+
+  <!-- CORE LOOP -->
+  <section class="section core-loop-bg" id="loop">
+    <div class="section-inner">
+      <p class="section-label">Core Loop</p>
+      <h2 class="section-title">An ecosystem that never stops — even when you do.</h2>
+      <p class="section-body">
+        AETERNUM is an offline-capable idle game. Your monsters generate energy while you sleep, work, or live your life. Return to find your farm evolved, your resources banked — or your ecosystem on the edge of collapse.
+      </p>
+
+      <div class="loop-steps">
+        <div class="loop-step">
+          <div class="loop-step-num">1</div>
+          <div class="loop-step-text">
+            <strong>Farm energy offline</strong>
+            <p>Every monster generates resource ticks around the clock. Log in to collect, reinvest, and expand your stable.</p>
+          </div>
+        </div>
+        <div class="loop-step">
+          <div class="loop-step-num">2</div>
+          <div class="loop-step-text">
+            <strong>Enter the genetic editor</strong>
+            <p>Splice gene sequences from two parent species. Compatible sequences produce new offspring. Incompatible sequences have consequences.</p>
+          </div>
+        </div>
+        <div class="loop-step">
+          <div class="loop-step-num">3</div>
+          <div class="loop-step-text">
+            <strong>Unlock new species</strong>
+            <p>Successful breeds unlock entries across 10,000+ species. Each creature belongs to one of five stability classes — from docile to catastrophic.</p>
+          </div>
+        </div>
+        <div class="loop-step">
+          <div class="loop-step-num">4</div>
+          <div class="loop-step-text">
+            <strong>Manage the singularity arc</strong>
+            <p>The late game unfolds in real time, measured in months and years. Your choices now determine what your ecosystem becomes.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <strong>⚠ Ecosystem warning</strong>
+        Miss 48 hours and your ecosystem starts to destabilize. Unstable monsters don't wait.
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section features">
+    <div class="section-inner" style="max-width:960px;">
+      <p class="section-label">Features</p>
+      <h2 class="section-title">Three systems. Infinite consequences.</h2>
+      <div class="features-grid">
+
+        <div class="feature-card genetics">
+          <span class="feature-icon">🧬</span>
+          <h3 class="feature-title">Genetic Breeding</h3>
+          <p class="feature-body">
+            Combine gene sequences from parent monsters in a real editor. Compatible genes unlock powerful offspring. Mismatched sequences trigger predatory behavior — your new creation may devour its siblings.
+          </p>
+          <div class="feature-stat">
+            <strong>Deliberate</strong>
+            Every breed is a calculated risk
+          </div>
+        </div>
+
+        <div class="feature-card species">
+          <span class="feature-icon">👁</span>
+          <h3 class="feature-title">10,000+ Species</h3>
+          <p class="feature-body">
+            A sprawling bestiary spanning five stability classes — from Class I docile harvesters to Class V apex predators that rewrite your ecosystem's rules. Discovering them all is a multi-year endeavor.
+          </p>
+          <div class="feature-stat">
+            <strong>10,000+</strong>
+            Unique species to discover
+          </div>
+        </div>
+
+        <div class="feature-card time">
+          <span class="feature-icon">⏳</span>
+          <h3 class="feature-title">Real-Time Progression</h3>
+          <p class="feature-body">
+            The endgame is not a destination — it's an era. Late-game milestones are spaced months apart. Your ecosystem evolves continuously, offline, demanding strategy across a timeline that mirrors real life.
+          </p>
+          <div class="feature-stat">
+            <strong>Years</strong>
+            Of real-time progression
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- STABILITY CLASSES -->
+  <section class="section stability">
+    <div class="section-inner">
+      <p class="section-label">Classification System</p>
+      <h2 class="section-title">Five classes. One direction.</h2>
+      <p class="section-body">
+        Every species is assigned a stability class at birth. Higher classes generate more energy — and more chaos.
+      </p>
+      <div class="stability-list">
+        <div class="stability-item">
+          <div class="stability-badge s1">Class I</div>
+          <div>
+            <div class="stability-name">Docile</div>
+            <div class="stability-desc">Safe, reliable energy producers. Ideal for beginners.</div>
+          </div>
+        </div>
+        <div class="stability-item">
+          <div class="stability-badge s2">Class II</div>
+          <div>
+            <div class="stability-name">Volatile</div>
+            <div class="stability-desc">Higher yield, minor inter-species friction. Manageable.</div>
+          </div>
+        </div>
+        <div class="stability-item">
+          <div class="stability-badge s3">Class III</div>
+          <div>
+            <div class="stability-name">Aggressive</div>
+            <div class="stability-desc">Significant energy but active ecosystem risks. Requires attention.</div>
+          </div>
+        </div>
+        <div class="stability-item">
+          <div class="stability-badge s4">Class IV</div>
+          <div>
+            <div class="stability-name">Apex</div>
+            <div class="stability-desc">Dominant predators. Reshape your ecosystem hierarchy.</div>
+          </div>
+        </div>
+        <div class="stability-item">
+          <div class="stability-badge s5">Class V</div>
+          <div>
+            <div class="stability-name">Catastrophic</div>
+            <div class="stability-desc">Singularity-tier entities. Handle with extraordinary care.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WAITLIST -->
+  <section class="section waitlist" id="waitlist">
+    <div class="section-inner">
+      <span class="waitlist-count">Alpha access opening soon</span>
+      <p class="section-label">Early Access</p>
+      <h2 class="section-title">Join the waitlist. Be there at the start.</h2>
+      <p class="section-body">
+        Alpha players get first access to the genetic editor, an exclusive starter species, and a direct line to the dev team during the most important phase of the game's evolution.
+      </p>
+
+      <!-- Netlify Forms: works automatically on Netlify. On GitHub Pages, swap action with a Formspree endpoint. -->
+      <form
+        name="waitlist"
+        method="POST"
+        netlify
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        class="waitlist-form"
+      >
+        <input type="hidden" name="form-name" value="waitlist" />
+        <p style="display:none"><input name="bot-field" /></p>
+        <input
+          type="email"
+          name="email"
+          class="waitlist-input"
+          placeholder="your@email.com"
+          required
+          autocomplete="email"
+        />
+        <button type="submit" class="waitlist-submit">Claim my spot →</button>
+        <p class="waitlist-note">No spam. No noise. One email when alpha opens.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">AETERNUM: MONSTER SINGULARITY</div>
+    <p>Mobile · Free to Play · Coming Soon</p>
+    <p style="margin-top:0.75rem">
+      © 2026 AETERNUM. All rights reserved.
+    </p>
+  </footer>
+
+</body>
+</html>

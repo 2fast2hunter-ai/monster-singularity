@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monster Singularity — Retention Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a0a1a;
+      color: #d0d8ff;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    h1 { color: #7c5cff; font-size: 1.5rem; margin-bottom: 4px; }
+    .subtitle { color: #5a6080; font-size: 0.85rem; margin-bottom: 24px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: #111128;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .card h2 { color: #a080ff; font-size: 1.1rem; margin-bottom: 12px; }
+    .btn {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.4; cursor: default; }
+    .btn-primary { background: #7c5cff; color: #fff; }
+    .btn-danger  { background: #cc2244; color: #fff; }
+    .btn-warn    { background: #cc7a00; color: #fff; }
+    .btn-ad      { background: #22aa55; color: #fff; }
+    .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+    .gap { margin-top: 10px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .label { font-size: 0.75rem; color: #6060a0; text-transform: uppercase; letter-spacing: 0.05em; }
+    .value { font-size: 1.2rem; font-weight: 700; color: #c0d0ff; }
+    .alert {
+      background: #1a0a0a;
+      border: 1px solid #aa2233;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 0.88rem;
+      color: #ff8899;
+    }
+    .alert.green {
+      background: #0a1a10;
+      border-color: #22aa55;
+      color: #88ffaa;
+    }
+    .alert.blue {
+      background: #0a0a1a;
+      border-color: #5555cc;
+      color: #aaccff;
+    }
+    .monster-list { margin-top: 8px; }
+    .monster-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 5px 8px; border-radius: 6px; margin-bottom: 4px;
+      font-size: 0.83rem;
+    }
+    .monster-row.alive  { background: #12122a; }
+    .monster-row.dead   { background: #1a0a0a; color: #553344; text-decoration: line-through; }
+    .power-badge {
+      background: #2a1a4a; color: #a080ff;
+      border-radius: 4px; padding: 2px 6px; font-size: 0.75rem; font-weight: 700;
+    }
+    /* Capsule grid */
+    .capsule-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .capsule-slot {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      border: 2px solid #2a2a4a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; color: #5a5a8a;
+      position: relative;
+    }
+    .capsule-slot.filled {
+      background: #1a1a3a;
+      border-color: #7c5cff;
+      color: #a080ff;
+    }
+    .capsule-slot.today {
+      border-color: #22aa55;
+      color: #22aa55;
+      animation: pulse 1.5s infinite;
+    }
+    .capsule-slot.reward {
+      border-color: #ffaa00;
+      color: #ffaa00;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,170,85,0.4); }
+      50%       { box-shadow: 0 0 0 6px rgba(34,170,85,0); }
+    }
+    #ad-modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8);
+      align-items: center; justify-content: center;
+      z-index: 100;
+    }
+    #ad-modal.open { display: flex; }
+    .ad-box {
+      background: #111128;
+      border: 2px solid #7c5cff;
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      max-width: 340px;
+      width: 90%;
+    }
+    .ad-box h3 { color: #a080ff; margin-bottom: 12px; }
+    .ad-timer { font-size: 2rem; font-weight: 700; color: #ffaa00; margin: 16px 0; }
+    #log {
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: #5a6080;
+      margin-top: 12px;
+      max-height: 120px;
+      overflow-y: auto;
+      border-top: 1px solid #1a1a3a;
+      padding-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Monster Singularity</h1>
+  <p class="subtitle">Retention Demo — Ecosystem Decay &amp; Daily Time Capsule</p>
+
+  <div class="grid">
+    <!-- ── Ecosystem Decay ── -->
+    <div class="card">
+      <h2>🌑 Ecosystem Decay</h2>
+      <div class="row">
+        <div>
+          <div class="label">Hours Offline</div>
+          <div class="value" id="hours-offline">—</div>
+        </div>
+        <div>
+          <div class="label">Alive Monsters</div>
+          <div class="value" id="alive-count">—</div>
+        </div>
+      </div>
+      <div id="decay-alert"></div>
+
+      <div class="monster-list" id="monster-list"></div>
+
+      <div class="row gap">
+        <button class="btn btn-primary" onclick="doLogin()">Login</button>
+        <button class="btn btn-warn btn-sm" onclick="simulate(72)">Simulate 72h offline</button>
+        <button class="btn btn-warn btn-sm" onclick="simulate(120)">Simulate 120h offline</button>
+      </div>
+    </div>
+
+    <!-- ── Daily Time Capsule ── -->
+    <div class="card">
+      <h2>🧬 Daily Time Capsule</h2>
+      <div class="row">
+        <div>
+          <div class="label">Streak</div>
+          <div class="value" id="streak-count">—</div>
+        </div>
+        <div>
+          <div class="label">Days Remaining</div>
+          <div class="value" id="days-remaining">—</div>
+        </div>
+      </div>
+
+      <div class="capsule-grid" id="capsule-grid"></div>
+      <p style="font-size:0.72rem;color:#4a4a7a;margin-top:6px;">Day 30 reward: Alpha Genome Shard (end-game gene fragment)</p>
+
+      <div id="streak-alert"></div>
+
+      <div class="row gap">
+        <button class="btn btn-ad" id="watch-ad-btn" onclick="openAdModal('streak')" disabled>
+          Watch Ad — Claim Today
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="simulateMiss()">Simulate missed day</button>
+      </div>
+
+      <div id="inventory-display" style="margin-top:12px;font-size:0.82rem;color:#88ffaa;"></div>
+    </div>
+  </div>
+
+  <div id="log"></div>
+
+  <!-- Ad Modal (simulated) -->
+  <div id="ad-modal">
+    <div class="ad-box">
+      <h3>📺 Advertisement</h3>
+      <p style="color:#6060a0;font-size:0.85rem;">Watching ad... please wait</p>
+      <div class="ad-timer" id="ad-timer">5</div>
+      <button class="btn btn-primary" id="ad-skip-btn" style="display:none" onclick="onAdComplete()">
+        Collect Reward
+      </button>
+      <p style="font-size:0.72rem;color:#3a3a5a;margin-top:12px;">[Simulated — real Ad SDK not integrated yet]</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

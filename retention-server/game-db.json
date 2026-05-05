@@ -1,0 +1,147 @@
+{
+  "players": {
+    "demo-player": {
+      "id": "demo-player",
+      "name": "Test Administrator",
+      "last_login_at": 1777925613,
+      "created_at": 1777925603
+    }
+  },
+  "monsters": {
+    "demo-player": [
+      {
+        "id": 1,
+        "player_id": "demo-player",
+        "alive": true,
+        "name": "Grub Larvae",
+        "species": "grub_larvae",
+        "power": 1
+      },
+      {
+        "id": 2,
+        "player_id": "demo-player",
+        "alive": true,
+        "name": "Mud Slime",
+        "species": "mud_slime",
+        "power": 2
+      },
+      {
+        "id": 3,
+        "player_id": "demo-player",
+        "alive": false,
+        "name": "Spore Cloud",
+        "species": "spore_cloud",
+        "power": 2
+      },
+      {
+        "id": 4,
+        "player_id": "demo-player",
+        "alive": false,
+        "name": "Tunnel Worm",
+        "species": "tunnel_worm",
+        "power": 3
+      },
+      {
+        "id": 5,
+        "player_id": "demo-player",
+        "alive": true,
+        "name": "Shadow Bat",
+        "species": "shadow_bat",
+        "power": 4
+      },
+      {
+        "id": 6,
+        "player_id": "demo-player",
+        "alive": true,
+        "name": "Plague Rat",
+        "species": "plague_rat",
+        "power": 4
+      },
+      {
+        "id": 7,
+        "player_id": "demo-player",
+        "alive": true,
+        "name": "Iron Beetle",
+        "species": "iron_beetle",
+        "power": 5
+      },
+      {
+        "id": 8,
+        "player_id": "demo-player",
+        "alive": true,
+        "name": "Void Leech",
+        "species": "void_leech",
+        "power": 6
+      },
+      {
+        "id": 9,
+        "player_id": "demo-player",
+        "alive": true,
+        "name": "Bone Crawler",
+        "species": "bone_crawler",
+        "power": 7
+      },
+      {
+        "id": 10,
+        "player_id": "demo-player",
+        "alive": true,
+        "name": "Tentacle Goliath",
+        "species": "tentacle_goliath",
+        "power": 20
+      }
+    ]
+  },
+  "decayEvents": {
+    "demo-player": [
+      {
+        "id": 1,
+        "player_id": "demo-player",
+        "monsters_restored": 2,
+        "triggered_at": 1777925613,
+        "hours_offline": 72,
+        "monsters_consumed": 4,
+        "detail": [
+          {
+            "id": 1,
+            "name": "Grub Larvae",
+            "species": "grub_larvae",
+            "power": 1
+          },
+          {
+            "id": 2,
+            "name": "Mud Slime",
+            "species": "mud_slime",
+            "power": 2
+          },
+          {
+            "id": 3,
+            "name": "Spore Cloud",
+            "species": "spore_cloud",
+            "power": 2
+          },
+          {
+            "id": 4,
+            "name": "Tunnel Worm",
+            "species": "tunnel_worm",
+            "power": 3
+          }
+        ]
+      }
+    ]
+  },
+  "streaks": {
+    "demo-player": {
+      "player_id": "demo-player",
+      "streak_count": 0,
+      "last_claim_date": "2026-05-01",
+      "last_login_date": "2026-05-04",
+      "gene_fragment_granted": false
+    }
+  },
+  "inventory": {
+    "demo-player": []
+  },
+  "_nextMonsterId": 11,
+  "_nextEventId": 2,
+  "_nextInventoryId": 1
+}

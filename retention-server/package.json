@@ -1,0 +1,13 @@
+{
+  "name": "monster-singularity-retention-server",
+  "version": "1.0.0",
+  "description": "Backend for Monster Singularity retention hooks: ecosystem decay + daily streak",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
