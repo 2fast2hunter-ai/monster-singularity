@@ -96,6 +96,7 @@ a { color: inherit; text-decoration: none; }
   transition: background 0.15s, color 0.15s;
 }
 .btn-secondary:hover { background: var(--accent2); color: #fff; }
+.btn-coming-soon { opacity: 0.6; cursor: default; pointer-events: none; }
 
 /* ── Hero ────────────────────────────────────────────────────── */
 .hero {
