@@ -9,15 +9,17 @@ import { CatalogPanel } from './components/CatalogPanel';
 import { BreedingPanel } from './components/BreedingPanel';
 import { RetentionBar } from './components/RetentionBar';
 import { DimensionStormBanner } from './components/DimensionStormBanner';
+import { AuctionPanel } from './components/AuctionPanel';
 import './App.css';
 
-type Tab = 'farm' | 'catalog' | 'breeding' | 'research';
+type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'farm', label: 'Farm' },
   { id: 'catalog', label: 'Omni-Dex' },
   { id: 'breeding', label: 'Breed' },
   { id: 'research', label: 'Research' },
+  { id: 'auction', label: 'Auction' },
 ];
 
 export default function App() {
@@ -60,6 +62,7 @@ export default function App() {
             <UpgradePanel />
           </div>
         )}
+        {activeTab === 'auction' && <AuctionPanel />}
       </main>
 
       <OfflineModal />

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import type { GameState, StreakState, DecayState } from '../game/types';
+import type { GameState, StreakState, DecayState, AuctionState } from '../game/types';
 import { makeInitialState, loadGame, saveGame, clearSave } from '../game/persistence';
+import { getAuctionWeekSeed } from '../game/auction';
 import { calculateOfflineCatchup, MIN_OFFLINE_SECONDS_FOR_MODAL } from '../game/offlineCatchup';
 import { getEffectiveProductionPerSecond, recalculateMultiplier } from '../game/production';
 import { checkDecayOnLogin } from '../game/decayLogic';
@@ -50,6 +51,10 @@ export interface GameStore extends GameState {
   // Retention actions
   claimDailyStreak: () => void;
   dismissDecayEvent: () => void;
+
+  // Auction actions
+  placeBid: (amount: number) => void;
+  grantAuctionWin: (speciesId: string) => void;
 }
 
 function todayUTC(): string {
@@ -324,6 +329,36 @@ export const useGameStore = create<GameStore>((set, get) => ({
   dismissDecayEvent: () => {
     const s = get();
     const updated = { decay: { ...s.decay, decayEventPending: false } };
+    set(updated);
+    saveGame({ ...s, ...updated });
+  },
+
+  // ── Auction ───────────────────────────────────────────────────────────────
+
+  placeBid: (amount: number) => {
+    const s = get();
+    const weekSeed = getAuctionWeekSeed();
+    if (s.energy < amount) return;
+    if (s.auction.weekNumber === weekSeed && s.auction.playerBid !== null) return;
+
+    const auction: AuctionState = { weekNumber: weekSeed, playerBid: amount, bidPlacedAt: Date.now() };
+    const updated = { energy: s.energy - amount, auction };
+    set(updated);
+    saveGame({ ...s, ...updated });
+  },
+
+  grantAuctionWin: (speciesId: string) => {
+    const s = get();
+    if (s.ownedSpecies.includes(speciesId)) return;
+    const species = CATALOG_BY_ID[speciesId];
+    if (!species) return;
+
+    const newOwned = [...s.ownedSpecies, speciesId];
+    const alreadyInFarm = s.monsters.find((m) => m.id === speciesId);
+    const newMonsters = alreadyInFarm
+      ? s.monsters
+      : [...s.monsters, { id: speciesId, name: species.name, productionRate: species.baseProductionRate, count: 1, stabilityClass: species.stabilityClass }];
+    const updated = { ownedSpecies: newOwned, monsters: newMonsters };
     set(updated);
     saveGame({ ...s, ...updated });
   },
