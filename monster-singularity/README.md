@@ -29,28 +29,31 @@ npm install
 NETLIFY_AUTH_TOKEN=<token> npx netlify-cli deploy --dir=dist --prod
 ```
 
-### GitHub Pages
+### GitHub Pages (active)
 
-A GitHub Actions workflow is at `.github/workflows/deploy.yml`. It:
-- Triggers on every push to `main`
-- Builds from `monster-singularity/` with `VITE_BASE_PATH=/monster-singularity/`
-- Deploys to GitHub Pages
+**Live URL: https://2fast2hunter-ai.github.io/monster-singularity/**
 
-To enable:
-1. Push the repo to GitHub
-2. Go to **Settings → Pages → Source** and select **GitHub Actions**
-3. The workflow runs automatically on the next push
+Deployment uses the `gh-pages` branch. To redeploy:
 
-Live URL: `https://<github-username>.github.io/monster-singularity/`
+```bash
+cd monster-singularity
+npm run build          # .env.production sets VITE_BASE_PATH=/monster-singularity/
+git worktree add /tmp/ghpages gh-pages
+cp -r dist/. /tmp/ghpages/
+cd /tmp/ghpages && git add -A && git commit -m "Deploy" && git push
+git worktree remove /tmp/ghpages
+```
+
+A GitHub Actions workflow also exists at `.github/workflows/deploy.yml` for CI-based deploys (requires Pages source set to "GitHub Actions" in repo settings).
 
 ### Vite Base Path
 
-The `vite.config.ts` reads `VITE_BASE_PATH` (defaults to `/`). Set this env var at build time to match your deployment URL prefix:
+The `vite.config.ts` uses `loadEnv` to read `VITE_BASE_PATH` (defaults to `/`). The `.env.production` file sets the correct value for GitHub Pages builds:
 
 | Target | `VITE_BASE_PATH` |
 |--------|-----------------|
-| Netlify | `/` (default) |
-| GitHub Pages | `/monster-singularity/` |
+| Local dev / Netlify | `/` (default) |
+| GitHub Pages | `/monster-singularity/` (set in `.env.production`) |
 
 ## Architecture
 
