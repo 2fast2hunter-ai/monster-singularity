@@ -5,6 +5,7 @@ import type { MonsterSpecies } from '../game/monster/types';
 import { formatNumber } from '../game/production';
 import { getCurrentDimensionStorm } from '../game/dimensionStorm';
 
+
 const STABILITY_COLORS: Record<string, string> = {
   Stable: '#10b981',
   Volatile: '#f59e0b',
@@ -22,9 +23,7 @@ const RARITY_COLORS: Record<string, string> = {
 };
 
 export function CatalogPanel() {
-  const energy = useGameStore((s) => s.energy);
   const ownedSpecies = useGameStore((s) => s.ownedSpecies);
-  const acquireSpecies = useGameStore((s) => s.acquireSpecies);
   const [filter, setFilter] = useState<string>('All');
   const [selected, setSelected] = useState<MonsterSpecies | null>(null);
 
@@ -35,10 +34,6 @@ export function CatalogPanel() {
   const visible = filter === 'All'
     ? SEED_CATALOG
     : SEED_CATALOG.filter((s) => s.stabilityClass === filter);
-
-  function acquireCost(species: MonsterSpecies): number {
-    return Math.floor(species.baseProductionRate * 50);
-  }
 
   return (
     <section className="panel catalog-panel">
@@ -59,8 +54,6 @@ export function CatalogPanel() {
       <div className="catalog-list">
         {visible.map((species) => {
           const owned = ownedSpecies.includes(species.id);
-          const cost = acquireCost(species);
-          const canAfford = energy >= cost;
           const stormBoosted = storm.boostedSpeciesIds.includes(species.id);
 
           return (
@@ -100,16 +93,8 @@ export function CatalogPanel() {
                 </div>
               </div>
 
-              {!owned && (
-                <button
-                  className={`btn-buy catalog-acquire ${canAfford ? '' : 'disabled'}`}
-                  onClick={(e) => { e.stopPropagation(); canAfford && acquireSpecies(species.id); }}
-                  disabled={!canAfford}
-                >
-                  {formatNumber(cost)} E
-                </button>
-              )}
               {owned && <span className="owned-badge">✓ Owned</span>}
+              {!owned && <span className="catalog-gacha-hint">Pull via Gacha</span>}
             </div>
           );
         })}

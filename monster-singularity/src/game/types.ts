@@ -45,6 +45,11 @@ export interface AuctionState {
   bidPlacedAt: number | null; // Unix ms timestamp of bid placement
 }
 
+export interface GachaState {
+  totalPulls: number;
+  pityCount: number; // pulls since last Rare+ (resets on Rare+ pull)
+}
+
 export interface GameState {
   energy: number;
   totalEnergyProduced: number;
@@ -65,4 +70,7 @@ export interface GameState {
 
   // Weekly Crypto-Zoo auction
   auction: AuctionState;
+
+  // Gacha / loot box system
+  gacha: GachaState;
 }

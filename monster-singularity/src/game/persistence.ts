@@ -24,6 +24,7 @@ export function makeInitialState(): GameState {
     decay: makeInitialDecayState(),
     dimensionStorm: null,
     auction: { weekNumber: -1, playerBid: null, bidPlacedAt: null },
+    gacha: { totalPulls: 0, pityCount: 0 },
   };
 }
 
@@ -66,6 +67,7 @@ export function loadGame(): GameState | null {
       decay: parsed.decay ?? initial.decay,
       dimensionStorm: parsed.dimensionStorm ?? null,
       auction: parsed.auction ?? initial.auction,
+      gacha: parsed.gacha ?? initial.gacha,
     };
   } catch {
     return null;

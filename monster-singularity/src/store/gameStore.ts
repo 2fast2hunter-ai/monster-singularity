@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import type { GameState, StreakState, DecayState, AuctionState } from '../game/types';
 import { makeInitialState, loadGame, saveGame, clearSave } from '../game/persistence';
 import { getAuctionWeekSeed } from '../game/auction';
+import { GACHA_BOXES, pullGacha, pullGachaMulti } from '../game/gacha';
+import type { GachaPullResult } from '../game/gacha';
 import { calculateOfflineCatchup, MIN_OFFLINE_SECONDS_FOR_MODAL } from '../game/offlineCatchup';
 import { getEffectiveProductionPerSecond, recalculateMultiplier } from '../game/production';
 import { checkDecayOnLogin } from '../game/decayLogic';
@@ -55,6 +57,11 @@ export interface GameStore extends GameState {
   // Auction actions
   placeBid: (amount: number) => void;
   grantAuctionWin: (speciesId: string) => void;
+
+  // Gacha actions
+  gachaPullResults: GachaPullResult[] | null;
+  dismissGachaResults: () => void;
+  openGachaBox: (boxId: string, multi?: boolean) => void;
 }
 
 function todayUTC(): string {
@@ -141,6 +148,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   breedingParentA: null,
   breedingParentB: null,
   instabilityPenalty: null,
+  gachaPullResults: null,
 
   dismissCatchup: () => set({ offlineCatchup: null }),
 
@@ -361,5 +369,66 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const updated = { ownedSpecies: newOwned, monsters: newMonsters };
     set(updated);
     saveGame({ ...s, ...updated });
+  },
+
+  // ── Gacha ─────────────────────────────────────────────────────────────────
+
+  dismissGachaResults: () => set({ gachaPullResults: null }),
+
+  openGachaBox: (boxId: string, multi = false) => {
+    const s = get();
+    const box = GACHA_BOXES.find((b) => b.id === boxId);
+    if (!box) return;
+
+    const count = multi ? 10 : 1;
+    const totalCost = multi ? Math.floor(box.cost * count * 0.9) : box.cost;
+    if (s.energy < totalCost) return;
+
+    const results: GachaPullResult[] = multi
+      ? pullGachaMulti(box, s.ownedSpecies, s.gacha.pityCount, 10)
+      : [pullGacha(box, s.ownedSpecies, s.gacha.pityCount)];
+
+    // Apply results to game state
+    let ownedSpecies = [...s.ownedSpecies];
+    let monsters = [...s.monsters];
+    let refundTotal = 0;
+
+    for (const result of results) {
+      refundTotal += result.energyRefund;
+      if (!result.isDuplicate && !ownedSpecies.includes(result.species.id)) {
+        ownedSpecies = [...ownedSpecies, result.species.id];
+        const alreadyInFarm = monsters.find((m) => m.id === result.species.id);
+        if (!alreadyInFarm) {
+          monsters = [...monsters, {
+            id: result.species.id,
+            name: result.species.name,
+            productionRate: result.species.baseProductionRate,
+            count: 1,
+            stabilityClass: result.species.stabilityClass,
+          }];
+        }
+      }
+    }
+
+    // Update pity: count non-Rare+ pulls, reset on any Rare+
+    let newPityCount = s.gacha.pityCount;
+    for (const result of results) {
+      const tier = result.species.rarityTier;
+      if (tier === 'Rare' || tier === 'Legendary' || tier === 'Singularity') {
+        newPityCount = 0;
+      } else {
+        newPityCount++;
+      }
+    }
+
+    const newEnergy = s.energy - totalCost + refundTotal;
+    const newGacha = {
+      totalPulls: s.gacha.totalPulls + count,
+      pityCount: newPityCount,
+    };
+
+    const stateUpdate = { energy: newEnergy, ownedSpecies, monsters, gacha: newGacha };
+    set({ ...stateUpdate, gachaPullResults: results });
+    saveGame({ ...s, ...stateUpdate });
   },
 }));

@@ -10,12 +10,14 @@ import { BreedingPanel } from './components/BreedingPanel';
 import { RetentionBar } from './components/RetentionBar';
 import { DimensionStormBanner } from './components/DimensionStormBanner';
 import { AuctionPanel } from './components/AuctionPanel';
+import { GachaPanel } from './components/GachaPanel';
 import './App.css';
 
-type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction';
+type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'farm', label: 'Farm' },
+  { id: 'gacha', label: 'Gacha' },
   { id: 'catalog', label: 'Omni-Dex' },
   { id: 'breeding', label: 'Breed' },
   { id: 'research', label: 'Research' },
@@ -55,6 +57,7 @@ export default function App() {
             <MonsterPanel />
           </div>
         )}
+        {activeTab === 'gacha' && <GachaPanel />}
         {activeTab === 'catalog' && <CatalogPanel />}
         {activeTab === 'breeding' && <BreedingPanel />}
         {activeTab === 'research' && (
