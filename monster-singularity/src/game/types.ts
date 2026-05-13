@@ -1,5 +1,6 @@
 import type { StabilityClass } from './monster/types';
 export type { StabilityClass };
+export type { StaffState, StaffMember, StaffRole } from './staff';
 
 export interface DimensionStorm {
   activeStabilityClass: StabilityClass;
@@ -50,6 +51,14 @@ export interface GachaState {
   pityCount: number; // pulls since last Rare+ (resets on Rare+ pull)
 }
 
+// Time-dilation: research items queued for timed completion at dimension 5+
+export interface ResearchQueueItem {
+  upgradeId: string;
+  startedAt: number;   // Unix ms
+  durationMs: number;  // total duration in ms
+  energyCost: number;  // already deducted from energy
+}
+
 export interface GameState {
   energy: number;
   totalEnergyProduced: number;
@@ -73,4 +82,16 @@ export interface GameState {
 
   // Gacha / loot box system
   gacha: GachaState;
+
+  // Time-dilation research queue (persisted)
+  researchQueue: ResearchQueueItem[];
+
+  // Secondary resource: Instability Particles (earns from unstable monsters)
+  instabilityParticles: number;
+
+  // Unix ms when IP hit zero; null when IP > 0. After 10 min → ecosystem decay.
+  instabilityDepletedSince: number | null;
+
+  // Staff / member system
+  staff: import('./staff').StaffState;
 }

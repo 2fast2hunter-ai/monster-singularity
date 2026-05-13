@@ -11,9 +11,11 @@ import { RetentionBar } from './components/RetentionBar';
 import { DimensionStormBanner } from './components/DimensionStormBanner';
 import { AuctionPanel } from './components/AuctionPanel';
 import { GachaPanel } from './components/GachaPanel';
+import { StaffPanel } from './components/StaffPanel';
+import { ResearchToast } from './components/ResearchToast';
 import './App.css';
 
-type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha';
+type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha' | 'staff';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'farm', label: 'Farm' },
@@ -22,6 +24,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'breeding', label: 'Breed' },
   { id: 'research', label: 'Research' },
   { id: 'auction', label: 'Auction' },
+  { id: 'staff', label: 'Team' },
 ];
 
 export default function App() {
@@ -66,10 +69,12 @@ export default function App() {
           </div>
         )}
         {activeTab === 'auction' && <AuctionPanel />}
+        {activeTab === 'staff' && <StaffPanel />}
       </main>
 
       <OfflineModal />
       <DebugPanel />
+      <ResearchToast />
     </div>
   );
 }

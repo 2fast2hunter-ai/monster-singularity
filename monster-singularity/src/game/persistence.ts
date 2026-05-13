@@ -1,6 +1,7 @@
 import type { GameState } from './types';
 import { UPGRADE_DEFINITIONS } from './upgrades';
 import { makeInitialDecayState } from './decayLogic';
+import { makeInitialStaffState } from './staff';
 
 const SAVE_KEY = 'monster_singularity_v2';
 
@@ -25,6 +26,10 @@ export function makeInitialState(): GameState {
     dimensionStorm: null,
     auction: { weekNumber: -1, playerBid: null, bidPlacedAt: null },
     gacha: { totalPulls: 0, pityCount: 0 },
+    researchQueue: [],
+    instabilityParticles: 0,
+    instabilityDepletedSince: null,
+    staff: makeInitialStaffState(),
   };
 }
 
@@ -68,6 +73,10 @@ export function loadGame(): GameState | null {
       dimensionStorm: parsed.dimensionStorm ?? null,
       auction: parsed.auction ?? initial.auction,
       gacha: parsed.gacha ?? initial.gacha,
+      researchQueue: parsed.researchQueue ?? [],
+      instabilityParticles: parsed.instabilityParticles ?? 0,
+      instabilityDepletedSince: parsed.instabilityDepletedSince ?? null,
+      staff: parsed.staff ?? makeInitialStaffState(),
     };
   } catch {
     return null;
