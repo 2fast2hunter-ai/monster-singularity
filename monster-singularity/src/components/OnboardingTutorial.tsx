@@ -20,26 +20,57 @@ const STEPS: Step[] = [
   },
   {
     id: 2,
-    title: 'Your Monsters',
-    body: 'Tap any monster card to inspect its stats and upgrade it. Your starter monster is already hard at work!',
-    highlight: '.monster-row',
+    title: 'Instability Particles',
+    body: 'The ⚡ bar tracks Instability Particles (IP). Higher-class monsters need IP to stay stable — if it empties, they start consuming your weaker monsters!',
+    highlight: '.ip-meter',
     position: 'bottom',
   },
   {
     id: 3,
-    title: 'Breed New Species',
-    body: 'Cross two monsters to discover entirely new species with unique abilities.',
-    highlight: '[data-tab="breeding"]',
+    title: 'Gacha Capsules',
+    body: 'Spend energy here to draw rare monsters you can\'t breed or buy. Every 10 pulls guarantees a Rare or better — keep rolling to fill your collection!',
+    highlight: '[data-tab="gacha"]',
     position: 'bottom',
   },
   {
     id: 4,
+    title: 'Breed New Species',
+    body: 'Cross two monsters to discover entirely new species. Rarer parents produce higher-class offspring with stronger bonuses.',
+    highlight: '[data-tab="breeding"]',
+    position: 'bottom',
+  },
+  {
+    id: 5,
     title: 'OmniDex',
-    body: 'Track your growing collection here. How many species can you discover?',
+    body: 'Track your full collection here. Discover new species to unlock permanent production multipliers.',
     highlight: '[data-tab="catalog"]',
     position: 'bottom',
   },
+  {
+    id: 6,
+    title: 'Research',
+    body: 'Spend Instability Particles to unlock permanent upgrades — faster breeding, better containment, and global multipliers.',
+    highlight: '[data-tab="research"]',
+    position: 'bottom',
+  },
+  {
+    id: 7,
+    title: 'Your Team',
+    body: 'Hire staff to automate tasks. Team members work in the background so you can focus on strategy.',
+    highlight: '[data-tab="staff"]',
+    position: 'bottom',
+  },
 ];
+
+const STEP_TABS: Record<number, string> = {
+  0: 'farm',
+  1: 'farm',
+  2: 'gacha',
+  3: 'breeding',
+  4: 'catalog',
+  5: 'research',
+  6: 'staff',
+};
 
 interface Props {
   onNavigate: (tab: string) => void;
@@ -57,14 +88,6 @@ export function OnboardingTutorial({ onNavigate }: Props) {
   if (!visible) return null;
 
   const current = STEPS[step];
-
-  // Which tab to show for each step index
-  const STEP_TABS: Record<number, string> = {
-    0: 'farm',
-    1: 'farm',
-    2: 'breeding',
-    3: 'catalog',
-  };
 
   function next() {
     const nextIdx = step + 1;
@@ -118,7 +141,7 @@ export function OnboardingTutorial({ onNavigate }: Props) {
         }}
       >
         {/* Step indicator */}
-        <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', gap: '4px', marginBottom: '12px' }}>
           {STEPS.map((_, i) => (
             <div
               key={i}
@@ -131,6 +154,11 @@ export function OnboardingTutorial({ onNavigate }: Props) {
               }}
             />
           ))}
+        </div>
+
+        {/* Step counter */}
+        <div style={{ fontSize: '0.7rem', color: '#6b7280', marginBottom: '6px', letterSpacing: '0.08em' }}>
+          STEP {step + 1} OF {STEPS.length}
         </div>
 
         <h3

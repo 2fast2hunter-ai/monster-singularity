@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { formatNumber } from '../game/production';
 import { STABILITY_MULTIPLIERS } from '../game/production';
@@ -5,8 +6,12 @@ import { getInstabilityParticlesPerSecond } from '../game/timeDilation';
 import { MonsterSprite } from './MonsterSprite';
 
 const IP_CAPACITY = 500;
+const IP_HINT_KEY = 'ms_ip_hint_dismissed';
 
 export function MonsterPanel() {
+  const [ipHintDismissed, setIpHintDismissed] = useState(
+    () => !!localStorage.getItem(IP_HINT_KEY)
+  );
   const monsters = useGameStore((s) => s.monsters);
   const productionMultiplier = useGameStore((s) => s.productionMultiplier);
   const energy = useGameStore((s) => s.energy);
@@ -54,6 +59,18 @@ export function MonsterPanel() {
       <div className="ip-meter">
         <div className="ip-meter-header">
           <span className="ip-label">⚡ Instability Particles</span>
+          {!ipHintDismissed && (
+            <button
+              className="ip-hint-btn"
+              aria-label="What are Instability Particles?"
+              onClick={() => {
+                localStorage.setItem(IP_HINT_KEY, '1');
+                setIpHintDismissed(true);
+              }}
+            >
+              ✕
+            </button>
+          )}
           <span className="ip-value">
             {formatNumber(instabilityParticles)} / {IP_CAPACITY}
             {ipNetPerSec !== 0 && (
@@ -69,6 +86,12 @@ export function MonsterPanel() {
             style={{ width: `${ipFill * 100}%` }}
           />
         </div>
+        {!ipHintDismissed && (
+          <div className="ip-first-time-hint">
+            IP fuels high-class monsters. Stable monsters generate it; Chaotic and above consume it.
+            If it hits zero, unstable monsters start eating your weaker ones.
+          </div>
+        )}
         {decayWarning && (
           <div className="ip-decay-warning">
             ⚠ Particles depleted — high-class monsters will begin consuming lower-class ones!
