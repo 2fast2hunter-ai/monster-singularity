@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGameLoop } from './hooks/useGameLoop';
 import { ResourceDisplay } from './components/ResourceDisplay';
 import { MonsterPanel } from './components/MonsterPanel';
@@ -29,9 +29,28 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'staff', label: 'Team' },
 ];
 
+const SEEN_TABS_KEY = 'ms_seen_tabs';
+
+function getSeenTabs(): Set<string> {
+  try { return new Set(JSON.parse(localStorage.getItem(SEEN_TABS_KEY) || '["farm"]')); }
+  catch { return new Set(['farm']); }
+}
+
+function markTabSeen(tab: string) {
+  const seen = getSeenTabs();
+  seen.add(tab);
+  localStorage.setItem(SEEN_TABS_KEY, JSON.stringify([...seen]));
+}
+
 export default function App() {
   useGameLoop();
   const [activeTab, setActiveTab] = useState<Tab>('farm');
+  const [seenTabs, setSeenTabs] = useState<Set<string>>(getSeenTabs);
+
+  useEffect(() => {
+    markTabSeen(activeTab);
+    setSeenTabs(getSeenTabs());
+  }, [activeTab]);
 
   return (
     <div className="app">
@@ -59,8 +78,10 @@ export default function App() {
             data-tab={t.id}
             className={`tab-btn ${activeTab === t.id ? 'active' : ''}`}
             onClick={() => setActiveTab(t.id)}
+            aria-label={t.label}
           >
             {t.label}
+            {!seenTabs.has(t.id) && <span className="tab-new-dot" aria-hidden="true" />}
           </button>
         ))}
       </nav>

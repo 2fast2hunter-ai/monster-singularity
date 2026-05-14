@@ -91,7 +91,7 @@ export function OnboardingTutorial({ onNavigate }: Props) {
         pointerEvents: 'none',
       }}
     >
-      {/* Dark overlay */}
+      {/* Dark overlay — intentionally not clickable to avoid accidental tutorial dismissal */}
       <div
         style={{
           position: 'absolute',
@@ -99,7 +99,6 @@ export function OnboardingTutorial({ onNavigate }: Props) {
           background: 'rgba(0,0,0,0.55)',
           pointerEvents: 'auto',
         }}
-        onClick={dismiss}
       />
 
       {/* Tutorial card */}
