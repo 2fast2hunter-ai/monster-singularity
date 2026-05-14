@@ -517,15 +517,21 @@ body {
 
 .tab-btn { position: relative; }
 
+@keyframes tab-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 4px var(--amber); }
+  50% { opacity: 0.7; transform: scale(1.4); box-shadow: 0 0 8px var(--amber); }
+}
+
 .tab-new-dot {
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   background: var(--amber);
   border-radius: 50%;
   box-shadow: 0 0 4px var(--amber);
+  animation: tab-dot-pulse 1.8s ease-in-out infinite;
 }
 
 /* ── Dimension Storm banner ── */
