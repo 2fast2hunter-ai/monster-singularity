@@ -22,7 +22,7 @@ const STEPS: Step[] = [
     id: 2,
     title: 'Your Monsters',
     body: 'Tap any monster card to inspect its stats and upgrade it. Your starter monster is already hard at work!',
-    highlight: '.monster-card',
+    highlight: '.monster-row',
     position: 'bottom',
   },
   {

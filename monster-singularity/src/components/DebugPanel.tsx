@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 
+const DEV_MODE = import.meta.env.DEV || import.meta.env.VITE_DEBUG === 'true';
+
 // Developer-only panel for testing offline catch-up without waiting
 export function DebugPanel() {
+  if (!DEV_MODE) return null;
   const [open, setOpen] = useState(false);
   const resetGame = useGameStore((s) => s.resetGame);
 
