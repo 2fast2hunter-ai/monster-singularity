@@ -106,6 +106,7 @@ export interface MonsterSpecies {
   description: string;
   unlockCondition?: string;          // optional — e.g. "breed MS-0003 + MS-0017"
   omniDexSlot: number;               // 1–10000; catalogue position
+  dimension?: 1 | 2 | 3;            // dimensional origin; 1 = default
 }
 
 // ── Breeding System ───────────────────────────────────────────────────────────

@@ -12,5 +12,8 @@ export default defineConfig(({ mode }) => {
         '/api': 'http://localhost:3200',
       },
     },
+    test: {
+      environment: 'node',
+    },
   }
 })

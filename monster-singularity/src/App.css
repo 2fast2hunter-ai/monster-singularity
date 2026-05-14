@@ -308,6 +308,22 @@ body {
   cursor: not-allowed;
 }
 
+.buy-buttons {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-buy-max {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.btn-buy-max:hover:not(.disabled) {
+  background: var(--green);
+  color: #000;
+}
+
 /* ── Offline modal ── */
 .modal-backdrop {
   position: fixed;
@@ -1626,4 +1642,121 @@ body {
   font-family: inherit;
   cursor: pointer;
   flex: 1;
+}
+
+/* ── Mobile-first responsive pass ── */
+
+/* Prevent horizontal scroll globally */
+html, body { overflow-x: hidden; }
+
+@media (max-width: 428px) {
+  .app {
+    padding: 12px 10px;
+    gap: 14px;
+  }
+
+  .app-title { font-size: 20px; }
+
+  /* Tab nav: horizontal scroll row so all 7 tabs are reachable */
+  .tab-nav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 4px;
+    gap: 3px;
+    border-radius: 10px;
+  }
+  .tab-nav::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    flex: 0 0 auto;
+    min-width: 64px;
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: 11px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Farm tab: stack monster-row so buy buttons sit below info */
+  .monster-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .monster-info { flex-basis: calc(100% - 52px); }
+
+  .buy-buttons {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .btn-buy, .btn-upgrade {
+    flex: 1;
+    min-height: 44px;
+    font-size: 11px;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* IP meter header: allow wrapping */
+  .ip-meter-header {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  /* OmniDex: stack production stats below main row info */
+  .catalog-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .catalog-row-main { width: 100%; }
+
+  .catalog-stats {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    padding-left: 36px; /* align under name, past sprite+slot */
+  }
+
+  .owned-badge,
+  .catalog-gacha-hint {
+    align-self: flex-start;
+    padding-left: 36px;
+  }
+
+  /* Filter buttons: slightly larger tap targets */
+  .filter-btn {
+    min-height: 36px;
+    padding: 6px 10px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Resource display: already handled at 600px, reinforce for 428 */
+  .resource-display {
+    padding: 14px;
+    gap: 16px;
+  }
+
+  .energy-value { font-size: 32px; }
+
+  /* Catalog panel height: allow more space on mobile */
+  .catalog-panel { max-height: 60vh; }
+}
+
+/* 375px (iPhone SE) — same rules apply, just tighten further */
+@media (max-width: 375px) {
+  .app { padding: 10px 8px; gap: 12px; }
+  .tab-btn { min-width: 58px; font-size: 10px; }
+  .catalog-stats { padding-left: 28px; }
+  .owned-badge, .catalog-gacha-hint { padding-left: 28px; }
 }

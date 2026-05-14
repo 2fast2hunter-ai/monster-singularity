@@ -22,6 +22,7 @@ import { CATALOG_BY_ID, SEED_CATALOG } from '../game/monster/catalog';
 import { previewBreeding as calcPreview, resolveBreeding } from '../game/monster/breeding';
 import type { MonsterSpecies, BreedingPreview } from '../game/monster/types';
 import type { BreedingResult } from '../game/monster/breeding';
+import { AUTOMATION_DEFINITIONS } from '../game/automations';
 
 const AUTOSAVE_TICK_INTERVAL = 300; // ticks (~5s at 60fps)
 const STREAK_LENGTH = 30;
@@ -80,6 +81,9 @@ export interface GameStore extends GameState {
   // Staff actions
   hireStaff: (role: StaffRole) => void;
   assignTask: (memberId: string, task: string) => void;
+
+  // Automation actions
+  purchaseAutomation: (automationId: string) => void;
 
   // Toast notification for completed research
   researchCompletedToasts: string[]; // upgrade names
@@ -249,17 +253,81 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
     }
 
+    // Run automations
+    let autoEnergy = newEnergy;
+    let autoMonsters = monsters;
+    let autoResearchQueue = researchQueue;
+    let autoUpgrades = upgrades;
+    let autoProductionMultiplier = productionMultiplier;
+    const autoState = { ...s.automationState };
+    const BASE_COSTS: Record<string, number> = { slime_basic: 10 };
+
+    for (const def of AUTOMATION_DEFINITIONS) {
+      if (!s.automations.includes(def.id)) continue;
+      const lastFired = autoState[def.id] ?? 0;
+      if (now - lastFired < def.intervalMs) continue;
+      autoState[def.id] = now;
+
+      if (def.id === 'auto_buy_slime') {
+        const m = autoMonsters.find((x) => x.id === 'slime_basic');
+        if (m) {
+          const cost = Math.floor((BASE_COSTS['slime_basic'] ?? 10) * Math.pow(1.15, m.count));
+          if (autoEnergy >= cost) {
+            autoEnergy -= cost;
+            autoMonsters = autoMonsters.map((x) => x.id === 'slime_basic' ? { ...x, count: x.count + 1 } : x);
+          }
+        }
+      } else if (def.id === 'auto_buy_max_slime') {
+        const m = autoMonsters.find((x) => x.id === 'slime_basic');
+        if (m) {
+          const baseCost = BASE_COSTS['slime_basic'] ?? 10;
+          let budget = autoEnergy;
+          let bought = 0;
+          let owned = m.count;
+          while (true) {
+            const cost = Math.floor(baseCost * Math.pow(1.15, owned + bought));
+            if (budget < cost) break;
+            budget -= cost;
+            bought++;
+            if (bought > 10000) break;
+          }
+          if (bought > 0) {
+            autoEnergy = budget;
+            autoMonsters = autoMonsters.map((x) => x.id === 'slime_basic' ? { ...x, count: x.count + bought } : x);
+          }
+        }
+      } else if (def.id === 'auto_research') {
+        const dimLevel = getDimensionLevel(autoUpgrades);
+        const durationMs = getResearchDurationMs(dimLevel);
+        const queuedIds = new Set(autoResearchQueue.map((i) => i.upgradeId));
+        const affordable = autoUpgrades
+          .filter((u) => !u.purchased && !queuedIds.has(u.id) && autoEnergy >= u.cost)
+          .sort((a, b) => a.cost - b.cost);
+        const cheapest = affordable[0];
+        if (cheapest) {
+          autoEnergy -= cheapest.cost;
+          if (durationMs > 0) {
+            autoResearchQueue = [...autoResearchQueue, { upgradeId: cheapest.id, startedAt: now, durationMs, energyCost: cheapest.cost }];
+          } else {
+            autoUpgrades = autoUpgrades.map((u) => u.id === cheapest.id ? { ...u, purchased: true } : u);
+            autoProductionMultiplier = recalculateMultiplier(autoUpgrades);
+          }
+        }
+      }
+    }
+
     const nextState: Partial<GameStore> = {
-      energy: newEnergy,
+      energy: autoEnergy,
       totalEnergyProduced: newTotal,
       tickCount: newTickCount,
       instabilityPenalty,
       instabilityParticles: newIP,
       instabilityDepletedSince,
-      monsters,
-      researchQueue,
-      upgrades,
-      productionMultiplier,
+      monsters: autoMonsters,
+      researchQueue: autoResearchQueue,
+      upgrades: autoUpgrades,
+      productionMultiplier: autoProductionMultiplier,
+      automationState: autoState,
     };
 
     if (newToasts.length > 0) {
@@ -311,11 +379,32 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   addMonster: (monsterId: string, count = 1) => {
     const s = get();
+    const BASE_COSTS: Record<string, number> = { slime_basic: 10 };
+    const baseCost = BASE_COSTS[monsterId] ?? 10;
+    const owned = s.monsters.find((m) => m.id === monsterId)?.count ?? 0;
+    // Deduct cumulative cost for all purchased units
+    let totalCost = 0;
+    for (let i = 0; i < count; i++) {
+      totalCost += Math.floor(baseCost * Math.pow(1.15, owned + i));
+    }
+    if (s.energy < totalCost) return;
+    const newEnergy = s.energy - totalCost;
     const newMonsters = s.monsters.map((m) =>
       m.id === monsterId ? { ...m, count: m.count + count } : m
     );
-    set({ monsters: newMonsters });
-    saveGame({ ...s, monsters: newMonsters });
+    set({ energy: newEnergy, monsters: newMonsters });
+    saveGame({ ...s, energy: newEnergy, monsters: newMonsters });
+  },
+
+  purchaseAutomation: (automationId: string) => {
+    const s = get();
+    if (s.automations.includes(automationId)) return;
+    const def = AUTOMATION_DEFINITIONS.find((a) => a.id === automationId);
+    if (!def || s.energy < def.cost) return;
+    const newEnergy = s.energy - def.cost;
+    const newAutomations = [...s.automations, automationId];
+    set({ energy: newEnergy, automations: newAutomations });
+    saveGame({ ...s, energy: newEnergy, automations: newAutomations });
   },
 
   resetGame: () => {

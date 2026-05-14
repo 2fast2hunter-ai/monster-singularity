@@ -13,6 +13,8 @@ import { AuctionPanel } from './components/AuctionPanel';
 import { GachaPanel } from './components/GachaPanel';
 import { StaffPanel } from './components/StaffPanel';
 import { ResearchToast } from './components/ResearchToast';
+import { OnboardingTutorial } from './components/OnboardingTutorial';
+import { AutomationPanel } from './components/AutomationPanel';
 import './App.css';
 
 type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha' | 'staff';
@@ -46,6 +48,7 @@ export default function App() {
         {TABS.map((t) => (
           <button
             key={t.id}
+            data-tab={t.id}
             className={`tab-btn ${activeTab === t.id ? 'active' : ''}`}
             onClick={() => setActiveTab(t.id)}
           >
@@ -58,6 +61,7 @@ export default function App() {
         {activeTab === 'farm' && (
           <div className="panels">
             <MonsterPanel />
+            <AutomationPanel />
           </div>
         )}
         {activeTab === 'gacha' && <GachaPanel />}
@@ -75,6 +79,7 @@ export default function App() {
       <OfflineModal />
       <DebugPanel />
       <ResearchToast />
+      <OnboardingTutorial onNavigate={(tab) => setActiveTab(tab as Tab)} />
     </div>
   );
 }

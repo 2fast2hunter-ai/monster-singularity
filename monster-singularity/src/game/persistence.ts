@@ -30,6 +30,8 @@ export function makeInitialState(): GameState {
     instabilityParticles: 0,
     instabilityDepletedSince: null,
     staff: makeInitialStaffState(),
+    automations: [],
+    automationState: {},
   };
 }
 
@@ -77,6 +79,8 @@ export function loadGame(): GameState | null {
       instabilityParticles: parsed.instabilityParticles ?? 0,
       instabilityDepletedSince: parsed.instabilityDepletedSince ?? null,
       staff: parsed.staff ?? makeInitialStaffState(),
+      automations: parsed.automations ?? [],
+      automationState: parsed.automationState ?? {},
     };
   } catch {
     return null;

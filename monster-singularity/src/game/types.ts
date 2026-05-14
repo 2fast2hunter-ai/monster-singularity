@@ -14,6 +14,7 @@ export interface Monster {
   productionRate: number; // energy per second, base
   count: number;
   stabilityClass: StabilityClass;
+  instabilityParticleCost: number; // IP consumed per second per unit (0 for Stable)
 }
 
 export interface Upgrade {
@@ -94,4 +95,12 @@ export interface GameState {
 
   // Staff / member system
   staff: import('./staff').StaffState;
+
+  // Purchased containment upgrade IDs (from CONTAINMENT_GATE_DEFINITIONS)
+  purchasedContainment: string[];
+
+  // Unlocked automation IDs
+  automations: string[];
+  // Tracks per-automation internal state (e.g. cooldown timestamps)
+  automationState: Record<string, number>;
 }
