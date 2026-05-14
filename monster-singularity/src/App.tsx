@@ -38,6 +38,14 @@ export default function App() {
       <header className="app-header">
         <h1 className="app-title">MONSTER SINGULARITY</h1>
         <p className="app-subtitle">Alpha v0.2</p>
+        <a
+          className="feedback-link"
+          href="https://github.com/2fast2hunter-ai/monster-singularity/issues/new?labels=alpha-feedback&title=%5BAlpha+Feedback%5D+&body=**What+did+you+enjoy%3F**%0A%0A**What+was+confusing+or+broken%3F**%0A%0A**Bugs+you+hit%3F**%0A%0A**Overall+rating+(1%E2%80%935)%3A**%0A"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Send Feedback
+        </a>
       </header>
 
       <ResourceDisplay />
