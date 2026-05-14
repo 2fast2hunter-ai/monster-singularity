@@ -4,18 +4,6 @@ import { STABILITY_MULTIPLIERS } from '../game/production';
 import { getInstabilityParticlesPerSecond } from '../game/timeDilation';
 import { MonsterSprite } from './MonsterSprite';
 
-const STABILITY_ICONS: Record<string, string> = {
-  Stable: '🟢',
-  Volatile: '🟡',
-  Chaotic: '🟠',
-  Aberrant: '🔴',
-  'Reality-Warping': '💜',
-};
-
-const MONSTER_EMOJI: Record<string, string> = {
-  slime_basic: '🟢',
-};
-
 const IP_CAPACITY = 500;
 
 export function MonsterPanel() {

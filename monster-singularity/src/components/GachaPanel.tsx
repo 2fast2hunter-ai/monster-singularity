@@ -17,6 +17,16 @@ const RARITY_GLOW: Record<string, string> = {
   Singularity: '0 0 24px rgba(236,72,153,0.9)',
 };
 
+const RARITY_PREFIX: Record<string, string> = {
+  Common: '',
+  Uncommon: '',
+  Rare: '★ ',
+  Legendary: '★★ ',
+  Singularity: '✦✦✦ ',
+};
+
+const HIGH_RARITY = new Set(['Rare', 'Legendary', 'Singularity']);
+
 export function GachaPanel() {
   const energy = useGameStore((s) => s.energy);
   const gacha = useGameStore((s) => s.gacha);
@@ -105,22 +115,36 @@ export function GachaPanel() {
           <div className="gacha-results" onClick={(e) => e.stopPropagation()}>
             <h4 className="gacha-results-title">Pull Results</h4>
             <div className="gacha-results-list">
-              {gachaPullResults.map((r, i) => (
+              {gachaPullResults.map((r, i) => {
+                const isHigh = HIGH_RARITY.has(r.species.rarityTier);
+                return (
                 <div
                   key={i}
-                  className={`gacha-result-card ${r.isDuplicate ? 'duplicate' : 'new'}`}
+                  className={`gacha-result-card ${r.isDuplicate ? 'duplicate' : 'new'} ${isHigh ? 'high-rarity' : ''}`}
                   style={{
                     borderColor: RARITY_COLORS[r.species.rarityTier],
                     boxShadow: RARITY_GLOW[r.species.rarityTier] ?? 'none',
+                    background: isHigh ? `rgba(${r.species.rarityTier === 'Singularity' ? '236,72,153' : r.species.rarityTier === 'Legendary' ? '245,158,11' : '59,130,246'}, 0.08)` : undefined,
                   }}
                 >
                   <span
                     className="gacha-result-rarity"
-                    style={{ color: RARITY_COLORS[r.species.rarityTier] }}
+                    style={{
+                      color: RARITY_COLORS[r.species.rarityTier],
+                      fontSize: isHigh ? '12px' : undefined,
+                    }}
                   >
                     {r.species.rarityTier}
                   </span>
-                  <span className="gacha-result-name">{r.species.name}</span>
+                  <span
+                    className="gacha-result-name"
+                    style={{
+                      color: isHigh ? RARITY_COLORS[r.species.rarityTier] : undefined,
+                      fontSize: isHigh ? '15px' : undefined,
+                    }}
+                  >
+                    {RARITY_PREFIX[r.species.rarityTier]}{r.species.name}
+                  </span>
                   {r.isDuplicate && (
                     <span className="gacha-result-dup">
                       Duplicate +{formatNumber(r.energyRefund)} E
@@ -129,7 +153,8 @@ export function GachaPanel() {
                   {!r.isDuplicate && <span className="gacha-result-new">NEW!</span>}
                   {r.pitySaved && <span className="gacha-result-pity">Pity!</span>}
                 </div>
-              ))}
+                );
+              })}
             </div>
             <button className="btn-gacha-close" onClick={dismissGachaResults}>
               Close

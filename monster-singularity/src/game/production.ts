@@ -1,6 +1,5 @@
 import type { GameState, Monster } from './types';
 import type { StabilityClass } from './monster/types';
-import { STABILITY_CLASS_ORDER } from './monster/types';
 
 export const STABILITY_MULTIPLIERS: Record<StabilityClass, number> = {
   'Stable': 1.0,

@@ -30,22 +30,6 @@ export const SEVERITY_PARAMS: Record<EventSeverity, {
   catastrophic: { productionLossFraction: 0.75, durationSec: 3600, hpDamageFraction: 0.25 },
 };
 
-const SEVERITY_THRESHOLDS: Array<[EventSeverity, number]> = [
-  ['minor', 0.60],
-  ['major', 0.90],
-  ['catastrophic', 1.00],
-];
-
-function rollSeverity(): EventSeverity {
-  const r = Math.random();
-  let cumulative = 0;
-  for (const [severity, weight] of SEVERITY_THRESHOLDS) {
-    cumulative += weight - (cumulative > 0 ? SEVERITY_THRESHOLDS[SEVERITY_THRESHOLDS.findIndex(([s]) => s === severity) - 1]?.[1] ?? 0 : 0);
-    if (r < cumulative) return severity;
-  }
-  return 'catastrophic';
-}
-
 function pickSeverity(): EventSeverity {
   const r = Math.random();
   if (r < 0.60) return 'minor';

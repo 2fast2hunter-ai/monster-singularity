@@ -6,7 +6,7 @@ import { makeInitialStaffState } from './staff';
 const SAVE_KEY = 'monster_singularity_v2';
 
 export const INITIAL_MONSTERS = [
-  { id: 'slime_basic', name: 'Basic Slime', productionRate: 1, count: 1, stabilityClass: 'Stable' as const },
+  { id: 'slime_basic', name: 'Basic Slime', productionRate: 1, count: 1, stabilityClass: 'Stable' as const, instabilityParticleCost: 0 },
 ];
 
 export function makeInitialState(): GameState {
@@ -29,6 +29,7 @@ export function makeInitialState(): GameState {
     researchQueue: [],
     instabilityParticles: 0,
     instabilityDepletedSince: null,
+    purchasedContainment: [],
     staff: makeInitialStaffState(),
     automations: [],
     automationState: {},

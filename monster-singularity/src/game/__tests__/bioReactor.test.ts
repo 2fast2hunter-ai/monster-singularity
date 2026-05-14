@@ -15,6 +15,7 @@ function makeMonster(overrides: Partial<Monster>): Monster {
     productionRate: 1,
     count: 1,
     stabilityClass: 'Stable',
+    instabilityParticleCost: 0,
     ...overrides,
   };
 }

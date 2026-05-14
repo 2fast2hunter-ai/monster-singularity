@@ -3,6 +3,7 @@
  * Variant selected deterministically from monsterId so each species has a unique look.
  * Rarity modulates glow intensity. No external image files required.
  */
+import React from 'react';
 
 type StabilityClass = 'Stable' | 'Volatile' | 'Chaotic' | 'Aberrant' | 'Reality-Warping';
 type RarityTier = 'Common' | 'Uncommon' | 'Rare' | 'Legendary' | 'Singularity';
@@ -32,7 +33,7 @@ const COLORS: Record<string, { fill: string; stroke: string; glow: string }> = {
 };
 
 type Palette = typeof COLORS[string];
-type ShapeFn = (props: { c: Palette }) => JSX.Element;
+type ShapeFn = (props: { c: Palette }) => React.JSX.Element;
 
 function simpleHash(s: string): number {
   let h = 0;

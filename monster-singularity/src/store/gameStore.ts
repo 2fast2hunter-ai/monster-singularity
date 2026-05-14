@@ -431,7 +431,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const alreadyInFarm = s.monsters.find((m) => m.id === speciesId);
     const newMonsters = alreadyInFarm
       ? s.monsters
-      : [...s.monsters, { id: speciesId, name: species.name, productionRate: species.baseProductionRate, count: 1, stabilityClass: species.stabilityClass }];
+      : [...s.monsters, { id: speciesId, name: species.name, productionRate: species.baseProductionRate, count: 1, stabilityClass: species.stabilityClass, instabilityParticleCost: species.instabilityParticleCost }];
 
     const updated = { ownedSpecies: newOwned, energy: newEnergy, monsters: newMonsters };
     set(updated);
@@ -500,7 +500,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const alreadyInFarm = fresh.monsters.find((m) => m.id === match.id);
         const newMonsters = alreadyInFarm
           ? fresh.monsters
-          : [...fresh.monsters, { id: match.id, name: match.name, productionRate: match.baseProductionRate, count: 1, stabilityClass: match.stabilityClass }];
+          : [...fresh.monsters, { id: match.id, name: match.name, productionRate: match.baseProductionRate, count: 1, stabilityClass: match.stabilityClass, instabilityParticleCost: match.instabilityParticleCost }];
         const updated = { ownedSpecies: [...fresh.ownedSpecies, match.id], monsters: newMonsters };
         set(updated);
         saveGame({ ...fresh, ...updated });
@@ -562,7 +562,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const alreadyInFarm = s.monsters.find((m) => m.id === speciesId);
     const newMonsters = alreadyInFarm
       ? s.monsters
-      : [...s.monsters, { id: speciesId, name: species.name, productionRate: species.baseProductionRate, count: 1, stabilityClass: species.stabilityClass }];
+      : [...s.monsters, { id: speciesId, name: species.name, productionRate: species.baseProductionRate, count: 1, stabilityClass: species.stabilityClass, instabilityParticleCost: species.instabilityParticleCost }];
     const updated = { ownedSpecies: newOwned, monsters: newMonsters };
     set(updated);
     saveGame({ ...s, ...updated });
@@ -602,6 +602,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             productionRate: result.species.baseProductionRate,
             count: 1,
             stabilityClass: result.species.stabilityClass,
+            instabilityParticleCost: result.species.instabilityParticleCost,
           }];
         }
       }
