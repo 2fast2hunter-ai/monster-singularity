@@ -15,9 +15,11 @@ import { StaffPanel } from './components/StaffPanel';
 import { ResearchToast } from './components/ResearchToast';
 import { OnboardingTutorial } from './components/OnboardingTutorial';
 import { AutomationPanel } from './components/AutomationPanel';
+import { AchievementsPanel } from './components/AchievementsPanel';
+import { TabIntroCard, shouldShowTabIntro, dismissTabIntro } from './components/TabIntroCard';
 import './App.css';
 
-type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha' | 'staff';
+type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha' | 'staff' | 'achievements';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'farm', label: 'Farm' },
@@ -27,6 +29,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'research', label: 'Research' },
   { id: 'auction', label: 'Auction' },
   { id: 'staff', label: 'Team' },
+  { id: 'achievements', label: 'Milestones' },
 ];
 
 const SEEN_TABS_KEY = 'ms_seen_tabs';
@@ -46,10 +49,14 @@ export default function App() {
   useGameLoop();
   const [activeTab, setActiveTab] = useState<Tab>('farm');
   const [seenTabs, setSeenTabs] = useState<Set<string>>(getSeenTabs);
+  const [activeTabIntro, setActiveTabIntro] = useState<string | null>(null);
 
   useEffect(() => {
     markTabSeen(activeTab);
     setSeenTabs(getSeenTabs());
+    if (shouldShowTabIntro(activeTab)) {
+      setActiveTabIntro(activeTab);
+    }
   }, [activeTab]);
 
   return (
@@ -103,12 +110,22 @@ export default function App() {
         )}
         {activeTab === 'auction' && <AuctionPanel />}
         {activeTab === 'staff' && <StaffPanel />}
+        {activeTab === 'achievements' && <AchievementsPanel />}
       </main>
 
       <OfflineModal />
       <DebugPanel />
       <ResearchToast />
       <OnboardingTutorial onNavigate={(tab) => setActiveTab(tab as Tab)} />
+      {activeTabIntro && (
+        <TabIntroCard
+          tab={activeTabIntro}
+          onDismiss={() => {
+            dismissTabIntro(activeTabIntro);
+            setActiveTabIntro(null);
+          }}
+        />
+      )}
     </div>
   );
 }
