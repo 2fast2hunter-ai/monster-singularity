@@ -17,6 +17,8 @@ const RARITY_COLOR: Record<string, string> = {
   Singularity: 'var(--accent-glow)',
 };
 
+const AUCTION_INTRO_KEY = 'ms_auction_intro_dismissed';
+
 export function AuctionPanel() {
   const energy = useGameStore((s) => s.energy);
   const auction = useGameStore((s) => s.auction);
@@ -27,6 +29,12 @@ export function AuctionPanel() {
   const [now, setNow] = useState(() => Date.now());
   const [bidInput, setBidInput] = useState('');
   const [bidError, setBidError] = useState('');
+  const [introDismissed, setIntroDismissed] = useState(() => !!localStorage.getItem(AUCTION_INTRO_KEY));
+
+  function dismissIntro() {
+    localStorage.setItem(AUCTION_INTRO_KEY, '1');
+    setIntroDismissed(true);
+  }
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
@@ -83,6 +91,22 @@ export function AuctionPanel() {
 
   return (
     <div className="auction-panel">
+      {/* First-time intro card */}
+      {!introDismissed && (
+        <div className="auction-intro-card">
+          <div className="auction-intro-header">
+            <span>🏺 How Auctions Work</span>
+            <button className="auction-intro-close" onClick={dismissIntro} aria-label="Dismiss">✕</button>
+          </div>
+          <ul className="auction-intro-list">
+            <li>Every <strong>Monday</strong> a new Legendary or Singularity monster goes up for auction.</li>
+            <li>Bid your <strong>energy</strong> — the highest bid above the hidden floor wins.</li>
+            <li>You can only bid once per week, so choose your amount carefully.</li>
+            <li>Winners receive the species immediately and it counts toward your OmniDex.</li>
+          </ul>
+        </div>
+      )}
+
       <div className="auction-header">
         <span className="auction-icon">🏺</span>
         <div>
