@@ -16,10 +16,11 @@ import { ResearchToast } from './components/ResearchToast';
 import { OnboardingTutorial } from './components/OnboardingTutorial';
 import { AutomationPanel } from './components/AutomationPanel';
 import { AchievementsPanel } from './components/AchievementsPanel';
+import { PatchNotesPanel } from './components/PatchNotesPanel';
 import { TabIntroCard, shouldShowTabIntro, dismissTabIntro } from './components/TabIntroCard';
 import './App.css';
 
-type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha' | 'staff' | 'achievements';
+type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha' | 'staff' | 'achievements' | 'patches';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'farm', label: 'Farm' },
@@ -30,6 +31,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'auction', label: 'Auction' },
   { id: 'staff', label: 'Team' },
   { id: 'achievements', label: 'Milestones' },
+  { id: 'patches', label: 'Patches' },
 ];
 
 const SEEN_TABS_KEY = 'ms_seen_tabs';
@@ -111,6 +113,7 @@ export default function App() {
         {activeTab === 'auction' && <AuctionPanel />}
         {activeTab === 'staff' && <StaffPanel />}
         {activeTab === 'achievements' && <AchievementsPanel />}
+        {activeTab === 'patches' && <PatchNotesPanel />}
       </main>
 
       <OfflineModal />

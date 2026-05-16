@@ -13,21 +13,21 @@ export const GACHA_BOXES: GachaBox[] = [
   {
     id: 'standard',
     name: 'Standard Capsule',
-    cost: 500,
+    cost: 5_000,
     description: 'A basic loot capsule. Mostly Common species.',
     weights: { Common: 60, Uncommon: 30, Rare: 9, Legendary: 1, Singularity: 0 },
   },
   {
     id: 'rare',
     name: 'Rare Capsule',
-    cost: 3000,
+    cost: 30_000,
     description: 'Higher-grade capsule with improved Rare odds.',
     weights: { Common: 15, Uncommon: 35, Rare: 35, Legendary: 14, Singularity: 1 },
   },
   {
     id: 'singularity',
     name: 'Singularity Box',
-    cost: 20000,
+    cost: 200_000,
     description: 'Ultimate box. Guaranteed Rare or above. Chance for Singularity.',
     weights: { Common: 0, Uncommon: 5, Rare: 40, Legendary: 45, Singularity: 10 },
   },
@@ -79,9 +79,26 @@ export function pullGacha(
 
   const species = pool[Math.floor(Math.random() * pool.length)];
   const isDuplicate = ownedSpecies.includes(species.id);
-  const energyRefund = isDuplicate ? Math.floor(box.cost * 0.3) : 0;
+  const energyRefund = isDuplicate ? Math.floor(box.cost * 0.2) : 0;
 
   return { species, isDuplicate, energyRefund, pitySaved };
+}
+
+// Milestone pull counts — hitting one triggers a celebration banner
+export const PULL_MILESTONES = [10, 50, 100, 250, 500, 1_000, 2_500, 5_000] as const;
+export type PullMilestone = (typeof PULL_MILESTONES)[number];
+
+/** Returns the first milestone crossed between prevTotal and newTotal, or null. */
+export function getMilestoneReached(prevTotal: number, newTotal: number): PullMilestone | null {
+  for (const m of PULL_MILESTONES) {
+    if (prevTotal < m && newTotal >= m) return m;
+  }
+  return null;
+}
+
+/** Returns the next milestone the player hasn't reached yet, or null if maxed. */
+export function getNextMilestone(totalPulls: number): PullMilestone | null {
+  return PULL_MILESTONES.find((m) => m > totalPulls) ?? null;
 }
 
 export function pullGachaMulti(

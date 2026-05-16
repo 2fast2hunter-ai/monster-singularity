@@ -41,6 +41,8 @@ export function CatalogPanel() {
   const ownedSpecies = useGameStore((s) => s.ownedSpecies);
   const [filter, setFilter] = useState<string>('All');
   const [dimFilter, setDimFilter] = useState<number | 'All'>('All');
+  const [ownedOnly, setOwnedOnly] = useState(false);
+  const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<MonsterSpecies | null>(null);
 
   const storm = getCurrentDimensionStorm();
@@ -63,15 +65,38 @@ export function CatalogPanel() {
 
   const stabilities = ['All', 'Stable', 'Volatile', 'Chaotic', 'Aberrant', 'Reality-Warping'];
 
+  const searchLower = search.trim().toLowerCase();
   const visible = SEED_CATALOG.filter((s) => {
     const stabilityMatch = filter === 'All' || s.stabilityClass === filter;
     const dimMatch = dimFilter === 'All' || (s.dimension ?? 1) === dimFilter;
-    return stabilityMatch && dimMatch;
+    const ownedMatch = !ownedOnly || ownedSpecies.includes(s.id);
+    const searchMatch = !searchLower || s.name.toLowerCase().includes(searchLower);
+    return stabilityMatch && dimMatch && ownedMatch && searchMatch;
   });
 
   return (
     <section className="panel catalog-panel">
-      <h3 className="panel-title">Omni-Dex Catalog — {SEED_CATALOG.length} Species</h3>
+      <h3 className="panel-title">
+        Omni-Dex Catalog
+        <span className="catalog-discovery-count"> — {ownedSpecies.length} / {SEED_CATALOG.length} discovered</span>
+      </h3>
+
+      <div className="catalog-search-row">
+        <input
+          className="catalog-search-input"
+          type="text"
+          placeholder="Search species…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          aria-label="Search species by name"
+        />
+        <button
+          className={`filter-btn catalog-owned-toggle ${ownedOnly ? 'active' : ''}`}
+          onClick={() => setOwnedOnly((v) => !v)}
+        >
+          {ownedOnly ? '✓ Owned' : 'Owned'}
+        </button>
+      </div>
 
       <div className="catalog-filters" style={{ marginBottom: 4 }}>
         {([`All` as const, 1, 2, 3] as const).map((d) => (
@@ -101,6 +126,9 @@ export function CatalogPanel() {
       </div>
 
       <div className="catalog-list">
+        {visible.length === 0 && (
+          <p className="empty-hint">No species match your filters.</p>
+        )}
         {visible.map((species) => {
           const owned = ownedSpecies.includes(species.id);
           const stormBoosted = storm.boostedSpeciesIds.includes(species.id);

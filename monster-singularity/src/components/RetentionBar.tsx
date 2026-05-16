@@ -3,6 +3,8 @@ import { useGameStore } from '../store/gameStore';
 import { formatDecayCountdown, DECAY_THRESHOLD_HOURS } from '../game/decayLogic';
 
 const STREAK_LENGTH = 30;
+const ECOSYSTEM_INTRO_KEY = 'ms_ecosystem_intro_seen';
+const STREAK_INTRO_KEY = 'ms_streak_intro_seen';
 
 export function RetentionBar() {
   const decay = useGameStore((s) => s.decay);
@@ -11,6 +13,18 @@ export function RetentionBar() {
   const dismissDecayEvent = useGameStore((s) => s.dismissDecayEvent);
 
   const [countdown, setCountdown] = useState(() => formatDecayCountdown(decay.lastLoginTimestamp));
+  const [ecosystemIntroSeen, setEcosystemIntroSeen] = useState(() => !!localStorage.getItem(ECOSYSTEM_INTRO_KEY));
+  const [streakIntroSeen, setStreakIntroSeen] = useState(() => !!localStorage.getItem(STREAK_INTRO_KEY));
+
+  function dismissEcosystemIntro() {
+    localStorage.setItem(ECOSYSTEM_INTRO_KEY, '1');
+    setEcosystemIntroSeen(true);
+  }
+
+  function dismissStreakIntro() {
+    localStorage.setItem(STREAK_INTRO_KEY, '1');
+    setStreakIntroSeen(true);
+  }
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -66,6 +80,12 @@ export function RetentionBar() {
             }
           </span>
           <span className="retention-hint">{DECAY_THRESHOLD_HOURS}h offline triggers decay</span>
+          {!ecosystemIntroSeen && (
+            <div className="retention-intro-caption">
+              <span>Offline more than 48h? Your weakest monsters get consumed. Log in daily to keep your ecosystem healthy.</span>
+              <button className="retention-intro-dismiss" aria-label="Dismiss" onClick={dismissEcosystemIntro}>✕</button>
+            </div>
+          )}
         </div>
 
         {/* Streak tracker */}
@@ -89,6 +109,12 @@ export function RetentionBar() {
             </button>
           ) : (
             <span className="streak-claimed">✓ Claimed today · {daysLeft} days to Alpha Genome Shard</span>
+          )}
+          {!streakIntroSeen && (
+            <div className="retention-intro-caption">
+              <span>Claim your daily streak each day. Reach Day 30 to earn the Alpha Genome Shard — a permanent upgrade.</span>
+              <button className="retention-intro-dismiss" aria-label="Dismiss" onClick={dismissStreakIntro}>✕</button>
+            </div>
           )}
         </div>
       </div>

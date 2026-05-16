@@ -1,6 +1,15 @@
 import type { StabilityClass } from './monster/types';
+import type { EggTier } from '../config/progressionConfig';
 export type { StabilityClass };
 export type { StaffState, StaffMember, StaffRole } from './staff';
+export type { Achievement, LifetimeStats } from '../systems/achievements';
+
+export interface ServerCycleSlot {
+  eggTier: EggTier;
+  placedAt: number;   // Unix ms
+  hatchesAt: number;  // Unix ms = placedAt + 180 days
+  hatched: boolean;
+}
 
 export interface DimensionStorm {
   activeStabilityClass: StabilityClass;
@@ -103,4 +112,21 @@ export interface GameState {
   automations: string[];
   // Tracks per-automation internal state (e.g. cooldown timestamps)
   automationState: Record<string, number>;
+
+  // Achievement system (persisted)
+  achievements: import('../systems/achievements').Achievement[];
+  lifetimeStats: import('../systems/achievements').LifetimeStats;
+
+  // Account creation timestamp (Unix ms) — used for real-time dimension floor gates
+  accountCreatedAt: number;
+
+  // Dimension progression (1–50 levels, 1–11 tiers)
+  dimensionLevel: number;
+  dimensionTier: number;
+
+  // Server Cycle legendary egg incubation slots
+  serverCycleSlots: ServerCycleSlot[];
+
+  // Set to true when all three Alpha Entity prerequisites are met
+  alphaEntityUnlocked: boolean;
 }

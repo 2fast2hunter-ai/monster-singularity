@@ -32,4 +32,28 @@ export const AUTOMATION_DEFINITIONS: AutomationDef[] = [
     unlockAt: 20_000,
     intervalMs: 60_000,
   },
+  {
+    id: 'auto_species_scout',
+    name: 'Species Scout',
+    description: 'Automatically acquires the cheapest unowned catalog species every 2 minutes when affordable.',
+    cost: 100_000,
+    unlockAt: 50_000,
+    intervalMs: 120_000,
+  },
+  {
+    id: 'auto_gacha_pull',
+    name: 'Auto Gacha Puller',
+    description: 'Automatically opens a Standard Capsule every 5 minutes when you can afford it.',
+    cost: 250_000,
+    unlockAt: 100_000,
+    intervalMs: 300_000,
+  },
+  {
+    id: 'auto_ip_rush',
+    name: 'IP Rush Researcher',
+    description: 'Automatically spends excess Instability Particles to rush queued research every 90s when IP ≥ 3× rush cost.',
+    cost: 500_000,
+    unlockAt: 250_000,
+    intervalMs: 90_000,
+  },
 ];

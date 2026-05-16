@@ -23,6 +23,17 @@ import { previewBreeding as calcPreview, resolveBreeding } from '../game/monster
 import type { MonsterSpecies, BreedingPreview } from '../game/monster/types';
 import type { BreedingResult } from '../game/monster/breeding';
 import { AUTOMATION_DEFINITIONS } from '../game/automations';
+import { checkAchievements } from '../systems/achievements';
+import {
+  validateDimensionPurchase,
+  validateServerCycleEggPlacement,
+  checkAlphaUnlock,
+  currentConditions,
+  checkServerCycleHatches,
+} from '../game/dimensionProgress';
+import type { DimensionPurchaseResult, ServerCyclePlaceResult } from '../game/dimensionProgress';
+import { EGG_IP_COST } from '../config/progressionConfig';
+import type { EggTier } from '../config/progressionConfig';
 
 const AUTOSAVE_TICK_INTERVAL = 300; // ticks (~5s at 60fps)
 const STREAK_LENGTH = 30;
@@ -88,6 +99,13 @@ export interface GameStore extends GameState {
   // Toast notification for completed research
   researchCompletedToasts: string[]; // upgrade names
   dismissResearchToast: (upgradeName: string) => void;
+
+  // Dimension progression actions
+  purchaseDimensionLevel: () => DimensionPurchaseResult;
+  placeServerCycleEgg: (slotIndex: number, eggTier: EggTier) => ServerCyclePlaceResult;
+
+  // Current active acquisition conditions (computed, not persisted)
+  getActiveConditions: () => ReturnType<typeof currentConditions>;
 }
 
 function todayUTC(): string {
@@ -140,7 +158,9 @@ function bootstrap(): { state: GameState; catchup: CatchupInfo | null } {
   }
 
   const offlineSeconds = (now - saved.lastSaveTimestamp) / 1000;
-  let state: GameState = { ...saved, sessionStartTimestamp: now, ownedSpecies, streak, decay };
+  // Increment session count on every load
+  const lifetimeStats = { ...saved.lifetimeStats, playSessions: saved.lifetimeStats.playSessions + 1 };
+  let state: GameState = { ...saved, sessionStartTimestamp: now, ownedSpecies, streak, decay, lifetimeStats };
   let catchup: CatchupInfo | null = null;
 
   if (offlineSeconds > MIN_OFFLINE_SECONDS_FOR_MODAL) {
@@ -158,6 +178,12 @@ function bootstrap(): { state: GameState; catchup: CatchupInfo | null } {
         wasCapped: result.wasCapped,
       };
     }
+  }
+
+  // Check server cycle hatches on session start
+  if (state.serverCycleSlots.length > 0) {
+    const { updatedSlots } = checkServerCycleHatches(state.serverCycleSlots, now);
+    state = { ...state, serverCycleSlots: updatedSlots };
   }
 
   return { state, catchup };
@@ -316,6 +342,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
     }
 
+    // Track lifetime IP generated
+    const newLifetimeStats = ipGained > 0
+      ? { ...s.lifetimeStats, totalIPGenerated: s.lifetimeStats.totalIPGenerated + ipGained, totalEnergyGenerated: s.lifetimeStats.totalEnergyGenerated + gained }
+      : { ...s.lifetimeStats, totalEnergyGenerated: s.lifetimeStats.totalEnergyGenerated + gained };
+
     const nextState: Partial<GameStore> = {
       energy: autoEnergy,
       totalEnergyProduced: newTotal,
@@ -328,16 +359,30 @@ export const useGameStore = create<GameStore>((set, get) => ({
       upgrades: autoUpgrades,
       productionMultiplier: autoProductionMultiplier,
       automationState: autoState,
+      lifetimeStats: newLifetimeStats,
     };
 
     if (newToasts.length > 0) {
       nextState.researchCompletedToasts = [...s.researchCompletedToasts, ...newToasts];
     }
 
+    // Check achievements every ~5 seconds (every AUTOSAVE_TICK_INTERVAL ticks)
+    if (newTickCount % AUTOSAVE_TICK_INTERVAL === 0) {
+      const partialState = { ...s, ...nextState } as GameStore;
+      const newAch = checkAchievements(s.achievements, newLifetimeStats, {
+        ownedSpecies: partialState.ownedSpecies,
+        totalEnergyProduced: newTotal,
+        monsters: autoMonsters,
+        purchasedContainment: partialState.purchasedContainment,
+        upgrades: autoUpgrades,
+      });
+      nextState.achievements = newAch;
+    }
+
     set(nextState);
 
     if (newTickCount % AUTOSAVE_TICK_INTERVAL === 0) {
-      saveGame({ ...s, energy: newEnergy, totalEnergyProduced: newTotal, researchQueue, upgrades, productionMultiplier, instabilityParticles: newIP, instabilityDepletedSince, monsters });
+      saveGame({ ...s, energy: newEnergy, totalEnergyProduced: newTotal, researchQueue, upgrades, productionMultiplier, instabilityParticles: newIP, instabilityDepletedSince, monsters, lifetimeStats: newLifetimeStats, achievements: nextState.achievements ?? s.achievements });
     }
   },
 
@@ -433,7 +478,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       ? s.monsters
       : [...s.monsters, { id: speciesId, name: species.name, productionRate: species.baseProductionRate, count: 1, stabilityClass: species.stabilityClass, instabilityParticleCost: species.instabilityParticleCost }];
 
-    const updated = { ownedSpecies: newOwned, energy: newEnergy, monsters: newMonsters };
+    const newStats = { ...s.lifetimeStats, speciesDiscovered: newOwned.length };
+    const newAch = checkAchievements(s.achievements, newStats, { ...s, ownedSpecies: newOwned, monsters: newMonsters });
+    const updated = { ownedSpecies: newOwned, energy: newEnergy, monsters: newMonsters, lifetimeStats: newStats, achievements: newAch };
     set(updated);
     saveGame({ ...s, ...updated });
   },
@@ -464,6 +511,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     const s = get();
 
+    // Track breed count + containment events in lifetime stats
+    const newLifetimeStats = { ...s.lifetimeStats, totalBred: s.lifetimeStats.totalBred + 1 };
+    if (result.instabilityEvent) {
+      newLifetimeStats.totalContainmentEvents = s.lifetimeStats.totalContainmentEvents + 1;
+    }
+
     // Apply instability damage to game state
     if (result.instabilityEvent) {
       const ev = result.instabilityEvent;
@@ -473,6 +526,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       const updated = {
         energy: Math.max(0, s.energy - energyLoss),
         instabilityPenalty: { multiplier: penaltyMultiplier, expiresAt },
+        lifetimeStats: newLifetimeStats,
       };
       set(updated);
       saveGame({ ...s, ...updated });
@@ -483,7 +537,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       const destroyedIds = new Set([breedingParentA.id, breedingParentB.id]);
       const newOwned = s.ownedSpecies.filter((id) => !destroyedIds.has(id));
       const newMonsters = s.monsters.filter((m) => !destroyedIds.has(m.id));
-      const updated = { ownedSpecies: newOwned, monsters: newMonsters };
+      const s2 = get();
+      const newAch = checkAchievements(s2.achievements, newLifetimeStats, { ...s2, ownedSpecies: newOwned, monsters: newMonsters });
+      const updated = { ownedSpecies: newOwned, monsters: newMonsters, lifetimeStats: newLifetimeStats, achievements: newAch };
       set(updated);
       saveGame({ ...s, ...updated });
       return;
@@ -496,16 +552,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
         (sp) => sp.geneSequence.join('') === offspringSeq.join(''),
       );
       const fresh = get();
+      let finalOwned = fresh.ownedSpecies;
+      let finalMonsters = fresh.monsters;
       if (match && !fresh.ownedSpecies.includes(match.id)) {
         const alreadyInFarm = fresh.monsters.find((m) => m.id === match.id);
-        const newMonsters = alreadyInFarm
+        finalMonsters = alreadyInFarm
           ? fresh.monsters
           : [...fresh.monsters, { id: match.id, name: match.name, productionRate: match.baseProductionRate, count: 1, stabilityClass: match.stabilityClass, instabilityParticleCost: match.instabilityParticleCost }];
-        const updated = { ownedSpecies: [...fresh.ownedSpecies, match.id], monsters: newMonsters };
-        set(updated);
-        saveGame({ ...fresh, ...updated });
+        finalOwned = [...fresh.ownedSpecies, match.id];
       }
+      const newAch = checkAchievements(fresh.achievements, newLifetimeStats, { ...fresh, ownedSpecies: finalOwned, monsters: finalMonsters });
+      const updated = { ownedSpecies: finalOwned, monsters: finalMonsters, lifetimeStats: newLifetimeStats, achievements: newAch };
+      set(updated);
+      saveGame({ ...fresh, ...updated });
+      return;
     }
+
+    // No success, no instability event — just update stats
+    const fresh2 = get();
+    const newAch2 = checkAchievements(fresh2.achievements, newLifetimeStats, fresh2);
+    set({ lifetimeStats: newLifetimeStats, achievements: newAch2 });
+    saveGame({ ...fresh2, lifetimeStats: newLifetimeStats, achievements: newAch2 });
   },
 
   dismissBreedingResult: () =>
@@ -690,4 +757,38 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set(updated);
     saveGame({ ...s, ...updated });
   },
+
+  // ── Dimension Progression ──────────────────────────────────────────────────
+
+  purchaseDimensionLevel: () => {
+    const s = get();
+    const result = validateDimensionPurchase(s);
+    if (!result.ok) return result;
+
+    const newEnergy = s.energy - result.cost;
+    const newLevel = result.newLevel;
+    const newTier = result.newTier;
+    const partialState = { ...s, dimensionLevel: newLevel, dimensionTier: newTier, energy: newEnergy };
+    const alphaEntityUnlocked = s.alphaEntityUnlocked || checkAlphaUnlock(partialState);
+    const updated = { energy: newEnergy, dimensionLevel: newLevel, dimensionTier: newTier, alphaEntityUnlocked };
+    set(updated);
+    saveGame({ ...s, ...updated });
+    return result;
+  },
+
+  placeServerCycleEgg: (slotIndex: number, eggTier: EggTier) => {
+    const s = get();
+    const result = validateServerCycleEggPlacement(s, slotIndex, eggTier);
+    if (!result.ok) return result;
+
+    const ipCost = EGG_IP_COST[eggTier];
+    const newSlots = [...s.serverCycleSlots];
+    newSlots[slotIndex] = result.slot;
+    const updated = { instabilityParticles: s.instabilityParticles - ipCost, serverCycleSlots: newSlots };
+    set(updated);
+    saveGame({ ...s, ...updated });
+    return result;
+  },
+
+  getActiveConditions: () => currentConditions(get()),
 }));

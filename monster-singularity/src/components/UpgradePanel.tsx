@@ -28,6 +28,11 @@ export function UpgradePanel() {
     (u) => !u.purchased && !queuedIds.has(u.id) && (u.unlockAt === undefined || totalEnergyProduced >= u.unlockAt)
   );
   const purchased = upgrades.filter((u) => u.purchased);
+
+  // Next locked upgrade — teaser row
+  const nextLocked = upgrades
+    .filter((u) => !u.purchased && u.unlockAt !== undefined && totalEnergyProduced < u.unlockAt!)
+    .sort((a, b) => a.unlockAt! - b.unlockAt!)[0] ?? null;
   const now = Date.now();
 
   return (
@@ -103,6 +108,29 @@ export function UpgradePanel() {
           );
         })}
       </div>
+
+      {/* Next locked upgrade teaser */}
+      {nextLocked && (
+        <div className="upgrade-row upgrade-locked-teaser">
+          <div className="upgrade-info">
+            <span className="upgrade-name upgrade-locked-name">
+              🔒 {nextLocked.name}
+            </span>
+            <span className="upgrade-desc">{nextLocked.description}</span>
+            <div className="upgrade-unlock-progress">
+              <div className="upgrade-unlock-bar">
+                <div
+                  className="upgrade-unlock-fill"
+                  style={{ width: `${Math.min(100, (totalEnergyProduced / nextLocked.unlockAt!) * 100)}%` }}
+                />
+              </div>
+              <span className="upgrade-unlock-label">
+                {formatNumber(Math.min(totalEnergyProduced, nextLocked.unlockAt!))} / {formatNumber(nextLocked.unlockAt!)} energy
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Purchased */}
       {purchased.length > 0 && (

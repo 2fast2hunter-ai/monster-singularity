@@ -2,6 +2,7 @@ import type { GameState } from './types';
 import { UPGRADE_DEFINITIONS } from './upgrades';
 import { makeInitialDecayState } from './decayLogic';
 import { makeInitialStaffState } from './staff';
+import { makeInitialAchievements, makeInitialLifetimeStats } from '../systems/achievements';
 
 const SAVE_KEY = 'monster_singularity_v2';
 
@@ -33,6 +34,13 @@ export function makeInitialState(): GameState {
     staff: makeInitialStaffState(),
     automations: [],
     automationState: {},
+    achievements: makeInitialAchievements(),
+    lifetimeStats: makeInitialLifetimeStats(),
+    accountCreatedAt: now,
+    dimensionLevel: 1,
+    dimensionTier: 1,
+    serverCycleSlots: [],
+    alphaEntityUnlocked: false,
   };
 }
 
@@ -82,6 +90,13 @@ export function loadGame(): GameState | null {
       staff: parsed.staff ?? makeInitialStaffState(),
       automations: parsed.automations ?? [],
       automationState: parsed.automationState ?? {},
+      achievements: parsed.achievements ?? makeInitialAchievements(),
+      lifetimeStats: parsed.lifetimeStats ?? makeInitialLifetimeStats(),
+      accountCreatedAt: parsed.accountCreatedAt ?? parsed.lastSaveTimestamp ?? Date.now(),
+      dimensionLevel: parsed.dimensionLevel ?? 1,
+      dimensionTier: parsed.dimensionTier ?? 1,
+      serverCycleSlots: parsed.serverCycleSlots ?? [],
+      alphaEntityUnlocked: parsed.alphaEntityUnlocked ?? false,
     };
   } catch {
     return null;
