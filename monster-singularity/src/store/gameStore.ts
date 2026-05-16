@@ -282,9 +282,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Run automations
     let autoEnergy = newEnergy;
     let autoMonsters = monsters;
+    let autoOwnedSpecies = s.ownedSpecies;
+    let autoGacha = s.gacha;
     let autoResearchQueue = researchQueue;
     let autoUpgrades = upgrades;
     let autoProductionMultiplier = productionMultiplier;
+    let autoIP = newIP;
     const autoState = { ...s.automationState };
     const BASE_COSTS: Record<string, number> = { slime_basic: 10 };
 
@@ -339,6 +342,64 @@ export const useGameStore = create<GameStore>((set, get) => ({
             autoProductionMultiplier = recalculateMultiplier(autoUpgrades);
           }
         }
+      } else if (def.id === 'auto_species_scout') {
+        const unowned = SEED_CATALOG
+          .filter((sp) => !autoOwnedSpecies.includes(sp.id))
+          .map((sp) => ({ sp, cost: Math.floor(sp.baseProductionRate * 50) }))
+          .sort((a, b) => a.cost - b.cost);
+        const cheapestUnowned = unowned[0];
+        if (cheapestUnowned && autoEnergy >= cheapestUnowned.cost) {
+          autoEnergy -= cheapestUnowned.cost;
+          autoOwnedSpecies = [...autoOwnedSpecies, cheapestUnowned.sp.id];
+          const alreadyInFarm = autoMonsters.find((m) => m.id === cheapestUnowned.sp.id);
+          if (!alreadyInFarm) {
+            autoMonsters = [...autoMonsters, {
+              id: cheapestUnowned.sp.id,
+              name: cheapestUnowned.sp.name,
+              productionRate: cheapestUnowned.sp.baseProductionRate,
+              count: 1,
+              stabilityClass: cheapestUnowned.sp.stabilityClass,
+              instabilityParticleCost: cheapestUnowned.sp.instabilityParticleCost,
+            }];
+          }
+        }
+      } else if (def.id === 'auto_gacha_pull') {
+        const standardBox = GACHA_BOXES.find((b) => b.id === 'standard');
+        if (standardBox && autoEnergy >= standardBox.cost) {
+          const result = pullGacha(standardBox, autoOwnedSpecies, autoGacha.pityCount);
+          autoEnergy -= standardBox.cost - result.energyRefund;
+          const tier = result.species.rarityTier;
+          const newPity = (tier === 'Rare' || tier === 'Legendary' || tier === 'Singularity') ? 0 : autoGacha.pityCount + 1;
+          autoGacha = { totalPulls: autoGacha.totalPulls + 1, pityCount: newPity };
+          if (!result.isDuplicate && !autoOwnedSpecies.includes(result.species.id)) {
+            autoOwnedSpecies = [...autoOwnedSpecies, result.species.id];
+            const alreadyInFarm = autoMonsters.find((m) => m.id === result.species.id);
+            if (!alreadyInFarm) {
+              autoMonsters = [...autoMonsters, {
+                id: result.species.id,
+                name: result.species.name,
+                productionRate: result.species.baseProductionRate,
+                count: 1,
+                stabilityClass: result.species.stabilityClass,
+                instabilityParticleCost: result.species.instabilityParticleCost,
+              }];
+            }
+          }
+        }
+      } else if (def.id === 'auto_ip_rush') {
+        if (autoResearchQueue.length > 0) {
+          const dimLevel = getDimensionLevel(autoUpgrades);
+          const rushCost = getRushCost(dimLevel);
+          if (autoIP >= rushCost * 3) {
+            const item = autoResearchQueue[0];
+            const remaining = getRemainingMs(item, now);
+            const newDurationMs = item.durationMs - remaining / 2;
+            autoResearchQueue = autoResearchQueue.map((i, idx) =>
+              idx === 0 ? { ...i, durationMs: newDurationMs } : i
+            );
+            autoIP -= rushCost;
+          }
+        }
       }
     }
 
@@ -352,9 +413,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       totalEnergyProduced: newTotal,
       tickCount: newTickCount,
       instabilityPenalty,
-      instabilityParticles: newIP,
+      instabilityParticles: autoIP,
       instabilityDepletedSince,
       monsters: autoMonsters,
+      ownedSpecies: autoOwnedSpecies,
+      gacha: autoGacha,
       researchQueue: autoResearchQueue,
       upgrades: autoUpgrades,
       productionMultiplier: autoProductionMultiplier,
@@ -382,7 +445,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set(nextState);
 
     if (newTickCount % AUTOSAVE_TICK_INTERVAL === 0) {
-      saveGame({ ...s, energy: newEnergy, totalEnergyProduced: newTotal, researchQueue, upgrades, productionMultiplier, instabilityParticles: newIP, instabilityDepletedSince, monsters, lifetimeStats: newLifetimeStats, achievements: nextState.achievements ?? s.achievements });
+      saveGame({ ...s, energy: autoEnergy, totalEnergyProduced: newTotal, researchQueue: autoResearchQueue, upgrades: autoUpgrades, productionMultiplier: autoProductionMultiplier, instabilityParticles: autoIP, instabilityDepletedSince, monsters: autoMonsters, ownedSpecies: autoOwnedSpecies, gacha: autoGacha, lifetimeStats: newLifetimeStats, achievements: nextState.achievements ?? s.achievements });
     }
   },
 
