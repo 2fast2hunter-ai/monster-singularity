@@ -85,6 +85,105 @@ export function generateLeaderboard(dateUTC: string, playerEnergy: number): Lead
   return allEntries.map((e, i) => ({ rank: i + 1, ...e }));
 }
 
+// ── Rival System ─────────────────────────────────────────────────────────────
+
+export interface RivalInfo {
+  handle: string;
+  energy: number;
+  rank: number;
+}
+
+const RIVAL_FLAVOR: string[] = [
+  'Their monsters sleep while yours grow stronger.',
+  'They were ahead of you yesterday. Not today.',
+  'Every second you gain on them counts.',
+  'They underestimated you. Prove them right.',
+  'The gap is closing. Keep the pressure on.',
+];
+
+export function getDailyFlavorText(dateUTC: string): string {
+  const seed = hashString(dateUTC + 'flavor');
+  const rng = mulberry32(seed);
+  return RIVAL_FLAVOR[Math.floor(rng() * RIVAL_FLAVOR.length)];
+}
+
+export function getRival(
+  entries: LeaderboardEntry[],
+  playerRank: number,
+): RivalInfo | null {
+  if (playerRank <= 1) return null;
+  const above = entries.find((e) => e.rank === playerRank - 1 && !e.isPlayer);
+  if (!above) return null;
+  return { handle: above.handle, energy: above.energy, rank: above.rank };
+}
+
+// ── Species Discovery Feed ────────────────────────────────────────────────────
+
+export interface DiscoveryFeedEntry {
+  text: string;
+  isPlayer: boolean;
+}
+
+const RARITY_MAX_COUNT: Record<string, number> = {
+  Common: 120,
+  Uncommon: 60,
+  Rare: 25,
+  Epic: 8,
+  Legendary: 2,
+};
+
+function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
+}
+
+export function generateDiscoveryFeed(
+  dateUTC: string,
+  discoveredSpecies: Array<{ id: string; name: string; rarityTier: string }>,
+): DiscoveryFeedEntry[] {
+  if (discoveredSpecies.length === 0) return [];
+
+  const playerId = getOrCreatePlayerId();
+  const playerHandleSeed = hashString(playerId + dateUTC);
+  const playerRng = mulberry32(playerHandleSeed);
+  const playerHandle = generateHandle(playerRng);
+
+  const entries: DiscoveryFeedEntry[] = [];
+
+  for (const species of discoveredSpecies) {
+    const seed = hashString(dateUTC + species.id);
+    const rng = mulberry32(seed);
+    const max = RARITY_MAX_COUNT[species.rarityTier] ?? 10;
+    const count = Math.max(1, Math.round(lerp(1, max, rng())));
+
+    // Fake global entry
+    const fakeHandleSeed = hashString(species.id + dateUTC + 'fake');
+    const fakeRng = mulberry32(fakeHandleSeed);
+    const fakeHandle = generateHandle(fakeRng);
+    entries.push({
+      text: `${fakeHandle} registered ${count}× ${species.name}`,
+      isPlayer: false,
+    });
+
+    // Occasionally insert a player entry
+    if (rng() > 0.7) {
+      entries.push({
+        text: `${playerHandle} (You) registered a ${species.name}`,
+        isPlayer: true,
+      });
+    }
+  }
+
+  // Shuffle deterministically by date
+  const shuffleSeed = hashString(dateUTC + 'shuffle');
+  const shuffleRng = mulberry32(shuffleSeed);
+  for (let i = entries.length - 1; i > 0; i--) {
+    const j = Math.floor(shuffleRng() * (i + 1));
+    [entries[i], entries[j]] = [entries[j], entries[i]];
+  }
+
+  return entries.slice(0, 30); // cap at 30 entries
+}
+
 export function formatEnergy(n: number): string {
   if (n >= 1e12) return (n / 1e12).toFixed(2) + 'T';
   if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';

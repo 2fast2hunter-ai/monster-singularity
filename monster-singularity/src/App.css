@@ -2293,3 +2293,255 @@ html, body { overflow-x: hidden; }
 .patch-change-text {
   color: var(--text);
 }
+
+/* ── Leaderboard Panel ───────────────────────────────────────────────── */
+.leaderboard-panel {
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.leaderboard-subtitle {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.leaderboard-top3 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.leaderboard-top-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.rank-1 { border-color: rgba(255, 215, 0, 0.45); background: rgba(255, 215, 0, 0.07); }
+.rank-2 { border-color: rgba(192, 192, 192, 0.4); background: rgba(192, 192, 192, 0.05); }
+.rank-3 { border-color: rgba(205, 127, 50, 0.4);  background: rgba(205, 127, 50, 0.06); }
+
+.lb-medal { font-size: 18px; }
+
+.lb-handle {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-energy {
+  font-size: 12px;
+  color: var(--accent-glow);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.lb-rank {
+  width: 28px;
+  text-align: right;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  margin: 8px 0;
+}
+
+.lb-player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: rgba(124, 58, 237, 0.15);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  font-size: 13px;
+}
+
+.lb-rank-player {
+  color: var(--accent-glow);
+  font-weight: 700;
+}
+
+.lb-handle-player {
+  color: var(--accent-glow);
+}
+
+.lb-gap-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+  margin: 6px 0 0;
+}
+
+.lb-rank1-msg {
+  color: #ffd700;
+}
+
+/* ── Community Tab / Rival Card ──────────────────────────────────────── */
+.community-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.rival-card {
+  padding: 14px 16px;
+}
+
+.rival-card--top {
+  text-align: center;
+}
+
+.rival-top-msg {
+  font-size: 13px;
+  color: #ffd700;
+  margin: 0;
+}
+
+.rival-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 0 0 10px;
+}
+
+.rival-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.rival-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-glow);
+  background: rgba(124, 58, 237, 0.18);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.rival-handle {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rival-energy {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.rival-progress-wrap {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.rival-progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent-glow);
+  transition: width 0.6s ease;
+}
+
+.rival-gap-text {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: 0 0 8px;
+}
+
+.rival-flavor {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-style: italic;
+  margin: 4px 0 0;
+  border-left: 2px solid rgba(124, 58, 237, 0.4);
+  padding-left: 8px;
+}
+
+.rival-surpass-toast {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ── Discovery Feed Ticker ───────────────────────────────────────────── */
+.discovery-feed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  margin-top: 12px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  transition: opacity 0.4s ease;
+}
+
+.feed-visible { opacity: 1; }
+.feed-hidden  { opacity: 0; }
+
+.feed-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.feed-text {
+  font-size: 11px;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feed-text--player {
+  color: var(--accent-glow);
+}

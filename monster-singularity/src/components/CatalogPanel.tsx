@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { SEED_CATALOG } from '../game/monster/catalog';
+import { DiscoveryFeed } from './DiscoveryFeed';
 import type { MonsterSpecies } from '../game/monster/types';
 import { formatNumber } from '../game/production';
 import { getCurrentDimensionStorm } from '../game/dimensionStorm';
@@ -75,6 +76,7 @@ export function CatalogPanel() {
   });
 
   return (
+    <>
     <section className="panel catalog-panel">
       <h3 className="panel-title">
         Omni-Dex Catalog
@@ -259,5 +261,7 @@ export function CatalogPanel() {
         </div>
       )}
     </section>
+    <DiscoveryFeed />
+    </>
   );
 }
