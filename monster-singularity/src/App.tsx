@@ -19,9 +19,10 @@ import { AchievementsPanel } from './components/AchievementsPanel';
 import { PatchNotesPanel } from './components/PatchNotesPanel';
 import { LeaderboardPanel } from './components/LeaderboardPanel';
 import { TabIntroCard, shouldShowTabIntro, dismissTabIntro } from './components/TabIntroCard';
+import { TowerTab } from './components/TowerTab';
 import './App.css';
 
-type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha' | 'staff' | 'achievements' | 'patches' | 'community';
+type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha' | 'staff' | 'tower' | 'achievements' | 'patches' | 'community';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'farm', label: 'Farm' },
@@ -31,6 +32,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'research', label: 'Research' },
   { id: 'auction', label: 'Auction' },
   { id: 'staff', label: 'Team' },
+  { id: 'tower', label: 'Tower' },
   { id: 'achievements', label: 'Milestones' },
   { id: 'patches', label: 'Patches' },
   { id: 'community', label: 'Community' },
@@ -114,6 +116,7 @@ export default function App() {
         )}
         {activeTab === 'auction' && <AuctionPanel />}
         {activeTab === 'staff' && <StaffPanel />}
+        {activeTab === 'tower' && <TowerTab />}
         {activeTab === 'achievements' && <AchievementsPanel />}
         {activeTab === 'patches' && <PatchNotesPanel />}
         {activeTab === 'community' && <LeaderboardPanel />}

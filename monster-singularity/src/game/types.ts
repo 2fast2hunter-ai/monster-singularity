@@ -1,8 +1,10 @@
 import type { StabilityClass } from './monster/types';
 import type { EggTier } from '../config/progressionConfig';
+import type { TowerState } from './tower/types';
 export type { StabilityClass };
 export type { StaffState, StaffMember, StaffRole } from './staff';
 export type { Achievement, LifetimeStats } from '../systems/achievements';
+export type { TowerState };
 
 export interface ServerCycleSlot {
   eggTier: EggTier;
@@ -41,6 +43,8 @@ export interface StreakState {
   streakCount: number;
   lastClaimDate: string | null; // UTC date string YYYY-MM-DD
   geneFragmentGranted: boolean;
+  /** True once the 30-Day Survivor badge has been earned (days 29+); permanent across resets */
+  survivorBadge: boolean;
 }
 
 export interface DecayState {
@@ -129,4 +133,7 @@ export interface GameState {
 
   // Set to true when all three Alpha Entity prerequisites are met
   alphaEntityUnlocked: boolean;
+
+  // Challenge Tower
+  towerState: TowerState;
 }

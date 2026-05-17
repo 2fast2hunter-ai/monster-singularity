@@ -3,6 +3,7 @@ import { UPGRADE_DEFINITIONS } from './upgrades';
 import { makeInitialDecayState } from './decayLogic';
 import { makeInitialStaffState } from './staff';
 import { makeInitialAchievements, makeInitialLifetimeStats } from '../systems/achievements';
+import { makeInitialTowerState } from './tower/towerLogic';
 
 const SAVE_KEY = 'monster_singularity_v2';
 
@@ -22,7 +23,7 @@ export function makeInitialState(): GameState {
     productionMultiplier: 1.0,
     offlineCatchupCapHours: 48,
     ownedSpecies: ['MS-0001'], // Verdant Slime starter
-    streak: { streakCount: 0, lastClaimDate: null, geneFragmentGranted: false },
+    streak: { streakCount: 0, lastClaimDate: null, geneFragmentGranted: false, survivorBadge: false },
     decay: makeInitialDecayState(),
     dimensionStorm: null,
     auction: { weekNumber: -1, playerBid: null, bidPlacedAt: null },
@@ -41,6 +42,7 @@ export function makeInitialState(): GameState {
     dimensionTier: 1,
     serverCycleSlots: [],
     alphaEntityUnlocked: false,
+    towerState: makeInitialTowerState(),
   };
 }
 
@@ -79,7 +81,9 @@ export function loadGame(): GameState | null {
         .reduce((acc, u) => acc * u.multiplier, 1.0),
       // Forward-compat defaults for new fields
       ownedSpecies: parsed.ownedSpecies ?? initial.ownedSpecies,
-      streak: parsed.streak ?? initial.streak,
+      streak: parsed.streak
+        ? { ...initial.streak, ...parsed.streak, survivorBadge: parsed.streak.survivorBadge ?? false }
+        : initial.streak,
       decay: parsed.decay ?? initial.decay,
       dimensionStorm: parsed.dimensionStorm ?? null,
       auction: parsed.auction ?? initial.auction,
@@ -97,6 +101,14 @@ export function loadGame(): GameState | null {
       dimensionTier: parsed.dimensionTier ?? 1,
       serverCycleSlots: parsed.serverCycleSlots ?? [],
       alphaEntityUnlocked: parsed.alphaEntityUnlocked ?? false,
+      towerState: parsed.towerState
+        ? {
+            ...makeInitialTowerState(),
+            ...parsed.towerState,
+            permanentBadges: parsed.towerState.permanentBadges ?? [],
+            highestEverFloor: parsed.towerState.highestEverFloor ?? 0,
+          }
+        : makeInitialTowerState(),
     };
   } catch {
     return null;

@@ -34,6 +34,16 @@ import {
 import type { DimensionPurchaseResult, ServerCyclePlaceResult } from '../game/dimensionProgress';
 import { EGG_IP_COST } from '../config/progressionConfig';
 import type { EggTier } from '../config/progressionConfig';
+import { CALENDAR_REWARDS, pullGuaranteedEgg } from '../game/loginCalendar';
+import type { CalendarReward } from '../game/loginCalendar';
+import {
+  makeInitialTowerState,
+  resolveTowerAttempt,
+  maybeApplyWeeklyReset,
+  calcPlayerPower,
+  getCurrentAttemptFloor,
+} from '../game/tower/towerLogic';
+import type { TowerAttemptResult } from '../game/tower/types';
 
 const AUTOSAVE_TICK_INTERVAL = 300; // ticks (~5s at 60fps)
 const STREAK_LENGTH = 30;
@@ -42,6 +52,13 @@ export interface CatchupInfo {
   energyGained: number;
   offlineSeconds: number;
   wasCapped: boolean;
+}
+
+export interface CalendarClaimResult {
+  day: number;
+  reward: CalendarReward;
+  pullResult?: GachaPullResult;
+  badgeAwarded: boolean;
 }
 
 export interface GameStore extends GameState {
@@ -76,6 +93,8 @@ export interface GameStore extends GameState {
   // Retention actions
   claimDailyStreak: () => void;
   dismissDecayEvent: () => void;
+  calendarClaimResult: CalendarClaimResult | null;
+  dismissCalendarClaimResult: () => void;
 
   // Auction actions
   placeBid: (amount: number) => void;
@@ -99,6 +118,11 @@ export interface GameStore extends GameState {
   // Toast notification for completed research
   researchCompletedToasts: string[]; // upgrade names
   dismissResearchToast: (upgradeName: string) => void;
+
+  // Tower actions
+  attemptTowerFloor: (floor: number) => void;
+  dismissTowerResult: () => void;
+  pendingTowerResult: TowerAttemptResult | null;
 
   // Dimension progression actions
   purchaseDimensionLevel: () => DimensionPurchaseResult;
@@ -201,7 +225,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
   breedingParentB: null,
   instabilityPenalty: null,
   gachaPullResults: null,
+  calendarClaimResult: null,
   researchCompletedToasts: [],
+  pendingTowerResult: null,
 
   dismissCatchup: () => set({ offlineCatchup: null }),
 
@@ -408,6 +434,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       ? { ...s.lifetimeStats, totalIPGenerated: s.lifetimeStats.totalIPGenerated + ipGained, totalEnergyGenerated: s.lifetimeStats.totalEnergyGenerated + gained }
       : { ...s.lifetimeStats, totalEnergyGenerated: s.lifetimeStats.totalEnergyGenerated + gained };
 
+    // Apply tower weekly reset if due
+    const resetTower = maybeApplyWeeklyReset(s.towerState, now);
+
     const nextState: Partial<GameStore> = {
       energy: autoEnergy,
       totalEnergyProduced: newTotal,
@@ -423,6 +452,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       productionMultiplier: autoProductionMultiplier,
       automationState: autoState,
       lifetimeStats: newLifetimeStats,
+      towerState: resetTower,
     };
 
     if (newToasts.length > 0) {
@@ -518,7 +548,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   resetGame: () => {
     clearSave();
     const fresh = makeInitialState();
-    set({ ...fresh, offlineCatchup: null, tickCount: 0, breedingPreview: null, breedingResult: null, breedingParentA: null, breedingParentB: null, instabilityDepletedSince: null, staff: makeInitialStaffState() });
+    set({ ...fresh, offlineCatchup: null, tickCount: 0, breedingPreview: null, breedingResult: null, breedingParentA: null, breedingParentB: null, instabilityDepletedSince: null, staff: makeInitialStaffState(), pendingTowerResult: null, towerState: makeInitialTowerState() });
   },
 
   // ── Catalog ────────────────────────────────────────────────────────────────
@@ -650,16 +680,56 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     const newCount = s.streak.streakCount + 1;
     const geneFragmentGranted = newCount >= STREAK_LENGTH && !s.streak.geneFragmentGranted;
+    const reward = CALENDAR_REWARDS[newCount] ?? CALENDAR_REWARDS[1];
+    const badgeAwarded = !!(reward.awardsBadge && !s.streak.survivorBadge);
+
     const newStreak: StreakState = {
       streakCount: newCount,
       lastClaimDate: today,
       geneFragmentGranted: s.streak.geneFragmentGranted || geneFragmentGranted,
+      survivorBadge: s.streak.survivorBadge || badgeAwarded,
     };
 
-    const updated = { streak: newStreak };
-    set(updated);
+    let pullResult: GachaPullResult | undefined;
+    let newEnergy = s.energy;
+    let newOwnedSpecies = s.ownedSpecies;
+    let newMonsters = s.monsters;
+    let newGacha = s.gacha;
+
+    if (reward.kind === 'energy' && reward.amount) {
+      newEnergy += reward.amount;
+    } else if (reward.kind === 'egg' && reward.guaranteedRarity) {
+      pullResult = pullGuaranteedEgg(reward.guaranteedRarity, s.ownedSpecies);
+      if (!pullResult.isDuplicate && !newOwnedSpecies.includes(pullResult.species.id)) {
+        newOwnedSpecies = [...newOwnedSpecies, pullResult.species.id];
+        const alreadyInFarm = newMonsters.find((m) => m.id === pullResult!.species.id);
+        if (!alreadyInFarm) {
+          newMonsters = [...newMonsters, {
+            id: pullResult.species.id,
+            name: pullResult.species.name,
+            productionRate: pullResult.species.baseProductionRate,
+            count: 1,
+            stabilityClass: pullResult.species.stabilityClass,
+            instabilityParticleCost: pullResult.species.instabilityParticleCost,
+          }];
+        }
+      }
+      newGacha = { totalPulls: s.gacha.totalPulls + 1, pityCount: 0 };
+    }
+
+    const claimResult: CalendarClaimResult = { day: newCount, reward, pullResult, badgeAwarded };
+    const updated = {
+      energy: newEnergy,
+      streak: newStreak,
+      ownedSpecies: newOwnedSpecies,
+      monsters: newMonsters,
+      gacha: newGacha,
+    };
+    set({ ...updated, calendarClaimResult: claimResult });
     saveGame({ ...s, ...updated });
   },
+
+  dismissCalendarClaimResult: () => set({ calendarClaimResult: null }),
 
   dismissDecayEvent: () => {
     const s = get();
@@ -854,4 +924,62 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   getActiveConditions: () => currentConditions(get()),
+
+  // ── Challenge Tower ────────────────────────────────────────────────────────
+
+  attemptTowerFloor: (floor: number) => {
+    const s = get();
+    const currentFloor = getCurrentAttemptFloor(s.towerState);
+    if (floor !== currentFloor) return;
+
+    const playerPower = calcPlayerPower(s.monsters);
+    const { result, energyReward, newOwnedSpecies, newMonsterEntry } = resolveTowerAttempt(
+      floor,
+      playerPower,
+      s.monsters,
+      s.towerState,
+      s.ownedSpecies,
+    );
+
+    let newTowerState = { ...s.towerState, lastAttemptResult: result };
+
+    if (result.success) {
+      const newWeeklyFloor = Math.max(s.towerState.weeklyFloor, floor);
+      const newHighestEver = Math.max(s.towerState.highestEverFloor, floor);
+      const newWeeklyRewards = result.milestoneBadgeGranted
+        ? [...s.towerState.weeklyRewardsClaimed, floor]
+        : s.towerState.weeklyRewardsClaimed;
+      const newPermanentBadges =
+        result.milestoneBadgeGranted && !s.towerState.permanentBadges.includes(result.milestoneBadgeGranted)
+          ? [...s.towerState.permanentBadges, result.milestoneBadgeGranted]
+          : s.towerState.permanentBadges;
+
+      newTowerState = {
+        ...newTowerState,
+        weeklyFloor: newWeeklyFloor,
+        highestEverFloor: newHighestEver,
+        weeklyRewardsClaimed: newWeeklyRewards,
+        permanentBadges: newPermanentBadges,
+      };
+    }
+
+    const newEnergy = s.energy + energyReward;
+    let newMonsters = s.monsters;
+    if (newMonsterEntry) {
+      const alreadyInFarm = s.monsters.find((m) => m.id === newMonsterEntry!.id);
+      if (!alreadyInFarm) newMonsters = [...s.monsters, newMonsterEntry];
+    }
+
+    const updated = {
+      towerState: newTowerState,
+      energy: newEnergy,
+      ownedSpecies: newOwnedSpecies,
+      monsters: newMonsters,
+      pendingTowerResult: result,
+    };
+    set(updated);
+    saveGame({ ...s, towerState: newTowerState, energy: newEnergy, ownedSpecies: newOwnedSpecies, monsters: newMonsters });
+  },
+
+  dismissTowerResult: () => set({ pendingTowerResult: null }),
 }));
