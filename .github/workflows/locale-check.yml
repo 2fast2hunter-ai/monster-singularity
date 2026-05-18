@@ -1,0 +1,49 @@
+name: Locale String Validation
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'monster-singularity/src/locales/**'
+      - 'monster-singularity/scripts/validate-locales.mjs'
+  pull_request:
+    paths:
+      - 'monster-singularity/src/locales/**'
+      - 'monster-singularity/scripts/validate-locales.mjs'
+  # Also run as a pre-release gate (called from deploy workflow)
+  workflow_call:
+
+jobs:
+  validate-locales:
+    name: Validate locale strings
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: monster-singularity
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check locale files exist
+        run: |
+          if [ ! -f src/locales/en.json ]; then
+            echo "ERROR: Reference locale src/locales/en.json not found"
+            exit 1
+          fi
+          echo "Locale files found:"
+          ls -la src/locales/
+
+      - name: Run locale validation
+        run: node scripts/validate-locales.mjs --strict
+
+      - name: Upload validation report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: locale-validation-report
+          path: monster-singularity/src/locales/
+          retention-days: 7

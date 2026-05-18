@@ -1,0 +1,191 @@
+{
+  "app": {
+    "title": "モンスター・シンギュラリティ",
+    "subtitle": "Alpha v0.2",
+    "feedback_link": "フィードバックを送る"
+  },
+  "tabs": {
+    "farm": "農場",
+    "gacha": "ガチャ",
+    "catalog": "オムニデックス",
+    "breeding": "育種",
+    "research": "研究",
+    "auction": "オークション",
+    "staff": "チーム",
+    "tower": "タワー",
+    "achievements": "実績",
+    "patches": "パッチ",
+    "community": "コミュニティ"
+  },
+  "resources": {
+    "essence": "エッセンス",
+    "crystals": "クリスタル",
+    "genes": "遺伝子フラグメント",
+    "instability": "不安定度",
+    "per_second": "{value}/秒",
+    "total": "合計：{value}"
+  },
+  "farm": {
+    "title": "モンスター農場",
+    "no_monsters": "まだモンスターがいません。最初の卵を孵化させよう！",
+    "monster_count": "{count} 体のモンスターが活動中",
+    "production_rate": "{rate} エッセンス/秒を生産中",
+    "feed_button": "餌やり",
+    "evolve_button": "進化",
+    "release_button": "リリース",
+    "release_confirm": "{name} をリリースしますか？この操作は取り消せません。",
+    "instability_warning": "不安定度が限界です！進化前に下げてください。",
+    "ecosystem_balance": "生態系バランス：{percent}%"
+  },
+  "breeding": {
+    "title": "遺伝子エディター",
+    "select_parent_a": "親A を選択",
+    "select_parent_b": "親B を選択",
+    "breed_button": "育種する",
+    "reset_button": "リセット",
+    "success_toast": "新しい卵が生まれました：{name}！",
+    "failure_toast": "育種失敗——遺伝的不適合。",
+    "instability_toast": "不安定度急上昇！{amount} の不安定度が発生しました。",
+    "no_parents": "育種を開始するには2体のモンスターを選択してください。",
+    "compatibility_label": "適合性：{percent}%",
+    "stability_class_label": "安定クラス：{class}",
+    "gene_sequence_title": "遺伝子配列",
+    "hatch_time_label": "孵化時間：{duration}",
+    "egg_incubating": "孵化中…{percent}% 完了"
+  },
+  "catalog": {
+    "title": "オムニデックス",
+    "subtitle": "既知の {total} 種をすべてカタログ化",
+    "discovered_label": "{discovered} / {total} 発見済み",
+    "search_placeholder": "種を検索…",
+    "filter_all": "すべて",
+    "filter_discovered": "発見済み",
+    "filter_undiscovered": "未発見",
+    "rarity_label": "レアリティ：{rarity}",
+    "stability_label": "安定性：{class}",
+    "first_discovered": "{player} が最初に発見",
+    "locked_hint": "稀な天文現象の際に出現"
+  },
+  "research": {
+    "title": "研究室",
+    "in_progress": "研究中：{name}",
+    "time_remaining": "残り時間：{duration}",
+    "complete_button": "完了",
+    "start_button": "研究する",
+    "cost_label": "コスト：{cost} クリスタル",
+    "unlocks_label": "解放：{feature}",
+    "queue_full": "研究キューが満杯です（{max} スロット）。",
+    "no_research": "利用可能な研究がありません。まず多くのモンスターを発見してください。"
+  },
+  "auction": {
+    "title": "クリプトズー・オークション",
+    "next_auction": "次のオークションまで：{duration}",
+    "current_bid": "現在の入札額：{amount}",
+    "your_bid": "あなたの入札額：{amount}",
+    "bid_button": "入札",
+    "bid_placeholder": "入札額を入力",
+    "outbid_toast": "{name} の入札を上回られました！",
+    "won_toast": "{name} を {amount} クリスタルで落札しました！",
+    "lost_toast": "オークション終了。{name} は {amount} で売れました。",
+    "missed_toast": "{name} のオークションを見逃しました。",
+    "no_auctions": "現在オークションはありません。来週また確認してください。",
+    "history_title": "オークション履歴",
+    "bid_too_low": "入札額は現在の入札額より少なくとも {min_increment} 高くなければなりません。"
+  },
+  "gacha": {
+    "title": "遺伝子プール",
+    "pull_single": "×1 引く",
+    "pull_multi": "×10 引く",
+    "cost_single": "{cost} クリスタル",
+    "cost_multi": "{cost} クリスタル",
+    "pity_label": "天井：{count} / {max}",
+    "rarity_common": "コモン",
+    "rarity_rare": "レア",
+    "rarity_legendary": "レジェンダリー",
+    "duplicate_refund": "重複！{amount} 遺伝子フラグメントを返還しました。",
+    "new_species_toast": "新種解放：{name}！",
+    "no_crystals": "クリスタルが不足しています。必要：{needed}、所持：{have}。"
+  },
+  "staff": {
+    "title": "チーム管理",
+    "hire_button": "採用",
+    "fire_button": "解雇",
+    "salary_label": "給料：{amount}/日",
+    "role_label": "役割：{role}",
+    "morale_label": "士気：{percent}%",
+    "no_staff": "まだスタッフが雇われていません。",
+    "hire_toast": "{name} がチームに加わりました！",
+    "fire_confirm": "{name} を解雇しますか？すぐに退職します。"
+  },
+  "tower": {
+    "title": "シンギュラリティ・タワー",
+    "floor_label": "{floor} 階",
+    "current_floor": "現在の階：{floor} / {max}",
+    "challenge_button": "挑戦",
+    "reward_label": "報酬：{reward}",
+    "locked_label": "ロック中——まず {required} 階をクリアしてください",
+    "victory_toast": "{floor} 階クリア！報酬：{reward}",
+    "defeat_toast": "{floor} 階で敗北。もう一度挑戦！"
+  },
+  "achievements": {
+    "title": "実績",
+    "progress_label": "{earned} / {total} 獲得",
+    "reward_label": "報酬：{reward}",
+    "unlocked_toast": "実績解放：{name}！",
+    "locked_hint": "{requirement} を完了して解放"
+  },
+  "storm": {
+    "banner_active": "ディメンション・ストーム発動中",
+    "banner_subtitle": "メタが再編成されました——戦略を適応させてください！",
+    "time_remaining": "終了まで：{duration}",
+    "bonus_label": "ストーム中は {bonus}× 生産"
+  },
+  "decay": {
+    "modal_title": "生態系の不均衡が検出されました",
+    "modal_body": "{duration} 間離れていました。強いモンスターが {count} 体の弱いモンスターを食べました。",
+    "survivors_label": "{count} 体のモンスターが生き残りました。",
+    "dismiss_button": "了解",
+    "warning_label": "バランスが {threshold}% 以下——崩壊加速中"
+  },
+  "offline": {
+    "modal_title": "おかえりなさい！",
+    "away_duration": "{duration} 間オフラインでした。",
+    "earned_label": "オフライン中に {amount} エッセンスを獲得しました。",
+    "claim_button": "受け取る",
+    "capped_warning": "オフライン収益は {cap} エッセンスが上限です。"
+  },
+  "capsule": {
+    "title": "デイリー・タイムカプセル",
+    "streak_label": "連続ログイン：{count} 日",
+    "reward_label": "本日の報酬：{reward}",
+    "claim_button": "受け取る",
+    "already_claimed": "本日はすでに受け取り済みです。また明日！",
+    "streak_bonus_label": "{day} 日目のストリーク報酬：{bonus}",
+    "streak_lost": "ストリーク終了！{days} 日間見逃しました。"
+  },
+  "onboarding": {
+    "step_1_title": "モンスター・シンギュラリティへようこそ",
+    "step_1_body": "モンスターを孵化させ、農場を作り、{total} 種すべてを集めましょう。",
+    "step_2_title": "エッセンスを稼ぐ",
+    "step_2_body": "モンスターは時間の経過とともにエッセンスを生産します。アップグレードしてより多く生産しましょう。",
+    "step_3_title": "新種を育てる",
+    "step_3_body": "遺伝子エディターで2体のモンスターを組み合わせて新種を発見しましょう。",
+    "step_4_title": "生態系を維持する",
+    "step_4_body": "生態系のバランスを保ちましょう。そうしないと強いモンスターが弱いモンスターを食べてしまいます！",
+    "next_button": "次へ",
+    "skip_button": "スキップ",
+    "finish_button": "プレイ開始"
+  },
+  "common": {
+    "close_button": "閉じる",
+    "cancel_button": "キャンセル",
+    "confirm_button": "確認",
+    "back_button": "戻る",
+    "loading": "読み込み中…",
+    "error_generic": "エラーが発生しました。もう一度お試しください。",
+    "error_network": "ネットワークエラー。接続を確認してください。",
+    "save_success": "保存しました！",
+    "copy_button": "コピー",
+    "share_button": "シェア"
+  }
+}

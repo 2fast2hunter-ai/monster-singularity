@@ -9,7 +9,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "validate:locales": "node scripts/validate-locales.mjs",
+    "validate:locales:strict": "node scripts/validate-locales.mjs --strict"
   },
   "dependencies": {
     "react": "^19.2.5",

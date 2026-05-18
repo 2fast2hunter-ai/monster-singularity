@@ -15,7 +15,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate-locales:
+    uses: ./.github/workflows/locale-check.yml
+
   build:
+    needs: validate-locales
     runs-on: ubuntu-latest
     defaults:
       run:

@@ -1,0 +1,191 @@
+{
+  "app": {
+    "title": "MONSTER SINGULARITY",
+    "subtitle": "Alpha v0.2",
+    "feedback_link": "Send Feedback"
+  },
+  "tabs": {
+    "farm": "Farm",
+    "gacha": "Gacha",
+    "catalog": "Omni-Dex",
+    "breeding": "Breed",
+    "research": "Research",
+    "auction": "Auction",
+    "staff": "Team",
+    "tower": "Tower",
+    "achievements": "Milestones",
+    "patches": "Patches",
+    "community": "Community"
+  },
+  "resources": {
+    "essence": "Essence",
+    "crystals": "Crystals",
+    "genes": "Gene Fragments",
+    "instability": "Instability",
+    "per_second": "{value}/s",
+    "total": "Total: {value}"
+  },
+  "farm": {
+    "title": "Monster Farm",
+    "no_monsters": "No monsters yet. Hatch your first egg!",
+    "monster_count": "{count} monsters active",
+    "production_rate": "Producing {rate} essence/s",
+    "feed_button": "Feed",
+    "evolve_button": "Evolve",
+    "release_button": "Release",
+    "release_confirm": "Release {name}? This cannot be undone.",
+    "instability_warning": "Instability critical! Reduce before evolving.",
+    "ecosystem_balance": "Ecosystem Balance: {percent}%"
+  },
+  "breeding": {
+    "title": "Genetic Editor",
+    "select_parent_a": "Select Parent A",
+    "select_parent_b": "Select Parent B",
+    "breed_button": "Breed",
+    "reset_button": "Reset",
+    "success_toast": "New egg created: {name}!",
+    "failure_toast": "Breeding failed — genetic incompatibility.",
+    "instability_toast": "Instability spike! {amount} instability generated.",
+    "no_parents": "Select two monsters to begin breeding.",
+    "compatibility_label": "Compatibility: {percent}%",
+    "stability_class_label": "Stability Class: {class}",
+    "gene_sequence_title": "Gene Sequence",
+    "hatch_time_label": "Hatch Time: {duration}",
+    "egg_incubating": "Incubating… {percent}% complete"
+  },
+  "catalog": {
+    "title": "OmniDex",
+    "subtitle": "Catalog all {total} known species",
+    "discovered_label": "{discovered} / {total} discovered",
+    "search_placeholder": "Search species…",
+    "filter_all": "All",
+    "filter_discovered": "Discovered",
+    "filter_undiscovered": "Undiscovered",
+    "rarity_label": "Rarity: {rarity}",
+    "stability_label": "Stability: {class}",
+    "first_discovered": "First discovered by {player}",
+    "locked_hint": "Appears during rare astronomical events"
+  },
+  "research": {
+    "title": "Research Lab",
+    "in_progress": "Research in progress: {name}",
+    "time_remaining": "Time remaining: {duration}",
+    "complete_button": "Complete",
+    "start_button": "Research",
+    "cost_label": "Cost: {cost} crystals",
+    "unlocks_label": "Unlocks: {feature}",
+    "queue_full": "Research queue is full ({max} slots).",
+    "no_research": "No research available. Discover more monsters first."
+  },
+  "auction": {
+    "title": "Crypto-Zoo Auction",
+    "next_auction": "Next auction in: {duration}",
+    "current_bid": "Current bid: {amount}",
+    "your_bid": "Your bid: {amount}",
+    "bid_button": "Bid",
+    "bid_placeholder": "Enter bid amount",
+    "outbid_toast": "You've been outbid on {name}!",
+    "won_toast": "You won {name} for {amount} crystals!",
+    "lost_toast": "Auction ended. {name} sold for {amount}.",
+    "missed_toast": "You missed the {name} auction.",
+    "no_auctions": "No active auctions. Check back next week.",
+    "history_title": "Auction History",
+    "bid_too_low": "Bid must exceed current bid by at least {min_increment}."
+  },
+  "gacha": {
+    "title": "Gene Pool",
+    "pull_single": "Pull ×1",
+    "pull_multi": "Pull ×10",
+    "cost_single": "{cost} crystals",
+    "cost_multi": "{cost} crystals",
+    "pity_label": "Pity: {count} / {max}",
+    "rarity_common": "Common",
+    "rarity_rare": "Rare",
+    "rarity_legendary": "Legendary",
+    "duplicate_refund": "Duplicate! Refunded {amount} gene fragments.",
+    "new_species_toast": "New species unlocked: {name}!",
+    "no_crystals": "Not enough crystals. Need {needed}, have {have}."
+  },
+  "staff": {
+    "title": "Team Management",
+    "hire_button": "Hire",
+    "fire_button": "Fire",
+    "salary_label": "Salary: {amount}/day",
+    "role_label": "Role: {role}",
+    "morale_label": "Morale: {percent}%",
+    "no_staff": "No staff hired yet.",
+    "hire_toast": "{name} joined the team!",
+    "fire_confirm": "Fire {name}? They will leave immediately."
+  },
+  "tower": {
+    "title": "Singularity Tower",
+    "floor_label": "Floor {floor}",
+    "current_floor": "Current floor: {floor} / {max}",
+    "challenge_button": "Challenge",
+    "reward_label": "Reward: {reward}",
+    "locked_label": "Locked — defeat floor {required} first",
+    "victory_toast": "Floor {floor} cleared! Reward: {reward}",
+    "defeat_toast": "Defeated on floor {floor}. Try again!"
+  },
+  "achievements": {
+    "title": "Milestones",
+    "progress_label": "{earned} / {total} earned",
+    "reward_label": "Reward: {reward}",
+    "unlocked_toast": "Achievement unlocked: {name}!",
+    "locked_hint": "Complete {requirement} to unlock"
+  },
+  "storm": {
+    "banner_active": "DIMENSION STORM ACTIVE",
+    "banner_subtitle": "Meta reshuffled — adapt your strategy!",
+    "time_remaining": "Ends in: {duration}",
+    "bonus_label": "{bonus}× production during storm"
+  },
+  "decay": {
+    "modal_title": "Ecosystem Imbalance Detected",
+    "modal_body": "You were away for {duration}. Stronger monsters consumed {count} weaker ones.",
+    "survivors_label": "{count} monsters survived.",
+    "dismiss_button": "Understood",
+    "warning_label": "Balance below {threshold}% — decay accelerating"
+  },
+  "offline": {
+    "modal_title": "Welcome Back!",
+    "away_duration": "You were away for {duration}.",
+    "earned_label": "You earned {amount} essence while offline.",
+    "claim_button": "Claim",
+    "capped_warning": "Offline earnings capped at {cap} essence."
+  },
+  "capsule": {
+    "title": "Daily Time Capsule",
+    "streak_label": "Streak: {count} days",
+    "reward_label": "Today's reward: {reward}",
+    "claim_button": "Claim",
+    "already_claimed": "Already claimed today. Come back tomorrow!",
+    "streak_bonus_label": "Streak bonus at day {day}: {bonus}",
+    "streak_lost": "Streak lost! You missed {days} day(s)."
+  },
+  "onboarding": {
+    "step_1_title": "Welcome to Monster Singularity",
+    "step_1_body": "Hatch monsters, build your farm, and collect all {total} species.",
+    "step_2_title": "Earn Essence",
+    "step_2_body": "Monsters produce essence over time. Upgrade them to produce more.",
+    "step_3_title": "Breed New Species",
+    "step_3_body": "Combine two monsters in the Genetic Editor to discover new species.",
+    "step_4_title": "Maintain Your Ecosystem",
+    "step_4_body": "Keep your ecosystem balanced or stronger monsters will eat weaker ones!",
+    "next_button": "Next",
+    "skip_button": "Skip",
+    "finish_button": "Start Playing"
+  },
+  "common": {
+    "close_button": "Close",
+    "cancel_button": "Cancel",
+    "confirm_button": "Confirm",
+    "back_button": "Back",
+    "loading": "Loading…",
+    "error_generic": "Something went wrong. Please try again.",
+    "error_network": "Network error. Check your connection.",
+    "save_success": "Saved!",
+    "copy_button": "Copy",
+    "share_button": "Share"
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "app": {
+    "title": "怪物奇点",
+    "subtitle": "Alpha v0.2",
+    "feedback_link": "发送反馈"
+  },
+  "tabs": {
+    "farm": "农场",
+    "gacha": "基因池",
+    "catalog": "全知图鉴",
+    "breeding": "繁殖",
+    "research": "研究",
+    "auction": "拍卖",
+    "staff": "团队",
+    "tower": "塔",
+    "achievements": "成就",
+    "patches": "补丁",
+    "community": "社区"
+  },
+  "resources": {
+    "essence": "精华",
+    "crystals": "水晶",
+    "genes": "基因碎片",
+    "instability": "不稳定性",
+    "per_second": "{value}/秒",
+    "total": "总计：{value}"
+  },
+  "farm": {
+    "title": "怪物农场",
+    "no_monsters": "还没有怪物。孵化你的第一个蛋！",
+    "monster_count": "{count} 只怪物活跃中",
+    "production_rate": "每秒产出 {rate} 精华",
+    "feed_button": "喂食",
+    "evolve_button": "进化",
+    "release_button": "放生",
+    "release_confirm": "放生 {name}？此操作无法撤销。",
+    "instability_warning": "不稳定性临界！进化前请先降低。",
+    "ecosystem_balance": "生态平衡度：{percent}%"
+  },
+  "breeding": {
+    "title": "基因编辑器",
+    "select_parent_a": "选择亲本A",
+    "select_parent_b": "选择亲本B",
+    "breed_button": "繁殖",
+    "reset_button": "重置",
+    "success_toast": "新蛋已孵化：{name}！",
+    "failure_toast": "繁殖失败——基因不相容。",
+    "instability_toast": "不稳定性激增！产生了 {amount} 点不稳定性。",
+    "no_parents": "请选择两只怪物开始繁殖。",
+    "compatibility_label": "相容性：{percent}%",
+    "stability_class_label": "稳定等级：{class}",
+    "gene_sequence_title": "基因序列",
+    "hatch_time_label": "孵化时间：{duration}",
+    "egg_incubating": "孵化中……{percent}% 完成"
+  },
+  "catalog": {
+    "title": "全知图鉴",
+    "subtitle": "收录全部 {total} 个已知物种",
+    "discovered_label": "已发现 {discovered} / {total}",
+    "search_placeholder": "搜索物种…",
+    "filter_all": "全部",
+    "filter_discovered": "已发现",
+    "filter_undiscovered": "未发现",
+    "rarity_label": "稀有度：{rarity}",
+    "stability_label": "稳定性：{class}",
+    "first_discovered": "首次由 {player} 发现",
+    "locked_hint": "在罕见天文事件期间出现"
+  },
+  "research": {
+    "title": "研究实验室",
+    "in_progress": "研究进行中：{name}",
+    "time_remaining": "剩余时间：{duration}",
+    "complete_button": "完成",
+    "start_button": "开始研究",
+    "cost_label": "费用：{cost} 水晶",
+    "unlocks_label": "解锁：{feature}",
+    "queue_full": "研究队列已满（{max} 个槽位）。",
+    "no_research": "暂无可研究内容。先发现更多怪物吧。"
+  },
+  "auction": {
+    "title": "加密动物园拍卖",
+    "next_auction": "下次拍卖：{duration}",
+    "current_bid": "当前出价：{amount}",
+    "your_bid": "你的出价：{amount}",
+    "bid_button": "出价",
+    "bid_placeholder": "输入出价金额",
+    "outbid_toast": "你在 {name} 上的出价已被超越！",
+    "won_toast": "你以 {amount} 水晶赢得了 {name}！",
+    "lost_toast": "拍卖结束。{name} 以 {amount} 售出。",
+    "missed_toast": "你错过了 {name} 的拍卖。",
+    "no_auctions": "当前没有活跃拍卖。请下周回来查看。",
+    "history_title": "拍卖历史",
+    "bid_too_low": "出价必须至少超过当前出价 {min_increment}。"
+  },
+  "gacha": {
+    "title": "基因池",
+    "pull_single": "抽取 ×1",
+    "pull_multi": "抽取 ×10",
+    "cost_single": "{cost} 水晶",
+    "cost_multi": "{cost} 水晶",
+    "pity_label": "保底：{count} / {max}",
+    "rarity_common": "普通",
+    "rarity_rare": "稀有",
+    "rarity_legendary": "传说",
+    "duplicate_refund": "重复！已退还 {amount} 基因碎片。",
+    "new_species_toast": "新物种解锁：{name}！",
+    "no_crystals": "水晶不足。需要 {needed}，当前拥有 {have}。"
+  },
+  "staff": {
+    "title": "团队管理",
+    "hire_button": "雇用",
+    "fire_button": "解雇",
+    "salary_label": "薪资：{amount}/天",
+    "role_label": "职位：{role}",
+    "morale_label": "士气：{percent}%",
+    "no_staff": "尚未雇用任何员工。",
+    "hire_toast": "{name} 加入了团队！",
+    "fire_confirm": "解雇 {name}？他们将立即离开。"
+  },
+  "tower": {
+    "title": "奇点塔",
+    "floor_label": "第 {floor} 层",
+    "current_floor": "当前层数：{floor} / {max}",
+    "challenge_button": "挑战",
+    "reward_label": "奖励：{reward}",
+    "locked_label": "已锁定——先击败第 {required} 层",
+    "victory_toast": "第 {floor} 层已清除！奖励：{reward}",
+    "defeat_toast": "在第 {floor} 层被击败。再试一次！"
+  },
+  "achievements": {
+    "title": "成就",
+    "progress_label": "已获得 {earned} / {total}",
+    "reward_label": "奖励：{reward}",
+    "unlocked_toast": "成就解锁：{name}！",
+    "locked_hint": "完成 {requirement} 以解锁"
+  },
+  "storm": {
+    "banner_active": "次元风暴激活",
+    "banner_subtitle": "元数据已重排——调整你的策略！",
+    "time_remaining": "结束时间：{duration}",
+    "bonus_label": "风暴期间产出 {bonus}×"
+  },
+  "decay": {
+    "modal_title": "检测到生态失衡",
+    "modal_body": "你已离开 {duration}。较强的怪物吞噬了 {count} 只较弱的怪物。",
+    "survivors_label": "{count} 只怪物存活。",
+    "dismiss_button": "知道了",
+    "warning_label": "平衡度低于 {threshold}%——衰减加速"
+  },
+  "offline": {
+    "modal_title": "欢迎回来！",
+    "away_duration": "你已离线 {duration}。",
+    "earned_label": "离线期间你赚取了 {amount} 精华。",
+    "claim_button": "领取",
+    "capped_warning": "离线收益上限为 {cap} 精华。"
+  },
+  "capsule": {
+    "title": "每日时间胶囊",
+    "streak_label": "连续登录：{count} 天",
+    "reward_label": "今日奖励：{reward}",
+    "claim_button": "领取",
+    "already_claimed": "今天已领取。明天再来！",
+    "streak_bonus_label": "第 {day} 天连续奖励：{bonus}",
+    "streak_lost": "连续中断！你错过了 {days} 天。"
+  },
+  "onboarding": {
+    "step_1_title": "欢迎来到怪物奇点",
+    "step_1_body": "孵化怪物，建立你的农场，收集全部 {total} 个物种。",
+    "step_2_title": "赚取精华",
+    "step_2_body": "怪物会随时间产出精华。升级它们可以产出更多。",
+    "step_3_title": "繁育新物种",
+    "step_3_body": "在基因编辑器中合并两只怪物，探索新物种。",
+    "step_4_title": "维护生态系统",
+    "step_4_body": "保持生态平衡，否则强大的怪物会吞噬弱小的！",
+    "next_button": "下一步",
+    "skip_button": "跳过",
+    "finish_button": "开始游戏"
+  },
+  "common": {
+    "close_button": "关闭",
+    "cancel_button": "取消",
+    "confirm_button": "确认",
+    "back_button": "返回",
+    "loading": "加载中…",
+    "error_generic": "出现错误，请重试。",
+    "error_network": "网络错误，请检查你的连接。",
+    "save_success": "已保存！",
+    "copy_button": "复制",
+    "share_button": "分享"
+  }
+}
