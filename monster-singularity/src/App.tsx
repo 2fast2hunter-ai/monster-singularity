@@ -20,6 +20,7 @@ import { PatchNotesPanel } from './components/PatchNotesPanel';
 import { LeaderboardPanel } from './components/LeaderboardPanel';
 import { TabIntroCard, shouldShowTabIntro, dismissTabIntro } from './components/TabIntroCard';
 import { TowerTab } from './components/TowerTab';
+import { RosterFullModal } from './components/RosterFullModal';
 import './App.css';
 
 type Tab = 'farm' | 'catalog' | 'breeding' | 'research' | 'auction' | 'gacha' | 'staff' | 'tower' | 'achievements' | 'patches' | 'community';
@@ -123,6 +124,7 @@ export default function App() {
       </main>
 
       <OfflineModal />
+      <RosterFullModal />
       <DebugPanel />
       <ResearchToast />
       <OnboardingTutorial onNavigate={(tab) => setActiveTab(tab as Tab)} />

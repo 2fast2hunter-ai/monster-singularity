@@ -1,0 +1,85 @@
+.roster-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.roster-modal {
+  background: #1a1a2e;
+  border: 1px solid #4a4a7a;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 360px;
+  width: 90%;
+  text-align: center;
+}
+
+.roster-modal-headline {
+  font-size: 1.4rem;
+  color: #e8e8ff;
+  margin: 0 0 0.75rem;
+}
+
+.roster-modal-body {
+  color: #aaa;
+  font-size: 0.95rem;
+  margin: 0 0 0.5rem;
+}
+
+.roster-modal-slots {
+  color: #888;
+  font-size: 0.8rem;
+  margin: 0 0 1rem;
+}
+
+.roster-modal-error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+}
+
+.roster-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.roster-btn-secondary {
+  background: transparent;
+  border: 1px solid #666;
+  color: #ccc;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.roster-btn-secondary:hover {
+  border-color: #aaa;
+  color: #fff;
+}
+
+.roster-btn-primary {
+  background: linear-gradient(135deg, #c8a227, #f0c040);
+  border: none;
+  color: #1a1a0a;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.roster-btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.roster-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

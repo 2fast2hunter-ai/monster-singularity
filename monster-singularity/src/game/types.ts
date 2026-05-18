@@ -136,4 +136,10 @@ export interface GameState {
 
   // Challenge Tower
   towerState: TowerState;
+
+  // Roster slot management (IAP + free earn)
+  rosterSlots: number; // default 6, max 60
+  rosterPacksPurchased: number; // IAP packs purchased, max 15
+  freeRosterSlotsEarned: number; // slots earned via milestones, max 9
+  omnidexSlotBonusGranted: boolean; // true after OmniDex 10% bonus granted
 }

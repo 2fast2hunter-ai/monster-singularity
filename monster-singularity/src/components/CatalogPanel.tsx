@@ -40,6 +40,9 @@ const DIMENSION_LABELS: Record<number, string> = {
 
 export function CatalogPanel() {
   const ownedSpecies = useGameStore((s) => s.ownedSpecies);
+  const rosterSlots = useGameStore((s) => s.rosterSlots);
+  const rosterPacksPurchased = useGameStore((s) => s.rosterPacksPurchased);
+  const expandRosterIAP = useGameStore((s) => s.expandRosterIAP);
   const [filter, setFilter] = useState<string>('All');
   const [dimFilter, setDimFilter] = useState<number | 'All'>('All');
   const [ownedOnly, setOwnedOnly] = useState(false);
@@ -82,6 +85,17 @@ export function CatalogPanel() {
         Omni-Dex Catalog
         <span className="catalog-discovery-count"> — {ownedSpecies.length} / {SEED_CATALOG.length} discovered</span>
       </h3>
+      <div className="roster-slots-row">
+        <span className="roster-slots-label">Roster: {ownedSpecies.length} / {rosterSlots} slots</span>
+        <button
+          className="roster-expand-btn"
+          disabled={rosterPacksPurchased >= 15 || rosterSlots >= 60}
+          onClick={() => expandRosterIAP()}
+          title={rosterPacksPurchased >= 15 || rosterSlots >= 60 ? 'Maximum roster size reached' : 'Add 3 roster slots'}
+        >
+          {rosterSlots >= 60 ? '60/60' : '+ Add 3 slots — $0.99'}
+        </button>
+      </div>
 
       <div className="catalog-search-row">
         <input

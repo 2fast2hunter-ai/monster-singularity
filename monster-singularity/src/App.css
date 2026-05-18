@@ -760,6 +760,30 @@ body {
 
 .catalog-discovery-count { font-size: 0.75rem; font-weight: 400; color: var(--text-dim); }
 
+.roster-slots-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+.roster-slots-label { color: var(--text-dim); }
+.roster-expand-btn {
+  background: linear-gradient(135deg, #c8a227, #f0c040);
+  border: none;
+  color: #1a1a0a;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+.roster-expand-btn:hover:not(:disabled) { opacity: 0.85; }
+.roster-expand-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
 .catalog-search-row {
   display: flex;
   gap: 8px;

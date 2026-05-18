@@ -16,6 +16,7 @@ import {
   getInstabilityParticlesPerSecond,
   getRushCost,
 } from '../game/timeDilation';
+import { getOmniDexCompletionPct } from '../game/dimensionProgress';
 import { STABILITY_CLASS_ORDER } from '../game/monster/types';
 import type { ResearchQueueItem } from '../game/types';
 import { CATALOG_BY_ID, SEED_CATALOG } from '../game/monster/catalog';
@@ -130,6 +131,11 @@ export interface GameStore extends GameState {
 
   // Current active acquisition conditions (computed, not persisted)
   getActiveConditions: () => ReturnType<typeof currentConditions>;
+
+  // Roster expansion
+  rosterFullPending: boolean; // set true when a monster-add was blocked by ROSTER_FULL
+  dismissRosterFull: () => void;
+  expandRosterIAP: () => 'ok' | 'at_cap' | 'iap_error';
 }
 
 function todayUTC(): string {
@@ -228,6 +234,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   calendarClaimResult: null,
   researchCompletedToasts: [],
   pendingTowerResult: null,
+  rosterFullPending: false,
 
   dismissCatchup: () => set({ offlineCatchup: null }),
 
@@ -559,6 +566,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!species) return;
     if (s.ownedSpecies.includes(speciesId)) return;
 
+    // Roster cap enforcement
+    if (s.ownedSpecies.length >= s.rosterSlots) {
+      set({ rosterFullPending: true });
+      return;
+    }
+
     const cost = Math.floor(species.baseProductionRate * 50);
     if (s.energy < cost) return;
 
@@ -573,7 +586,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     const newStats = { ...s.lifetimeStats, speciesDiscovered: newOwned.length };
     const newAch = checkAchievements(s.achievements, newStats, { ...s, ownedSpecies: newOwned, monsters: newMonsters });
-    const updated = { ownedSpecies: newOwned, energy: newEnergy, monsters: newMonsters, lifetimeStats: newStats, achievements: newAch };
+
+    // OmniDex 10% milestone: check before and after adding the new species
+    let rosterSlots = s.rosterSlots;
+    let freeRosterSlotsEarned = s.freeRosterSlotsEarned;
+    let omnidexSlotBonusGranted = s.omnidexSlotBonusGranted;
+    if (!omnidexSlotBonusGranted) {
+      const prevPct = getOmniDexCompletionPct(s.ownedSpecies, s.dimensionTier);
+      const newPct = getOmniDexCompletionPct(newOwned, s.dimensionTier);
+      if (prevPct < 10 && newPct >= 10) {
+        const gain = Math.min(3, 9 - freeRosterSlotsEarned);
+        freeRosterSlotsEarned += gain;
+        rosterSlots = Math.min(60, rosterSlots + gain);
+        omnidexSlotBonusGranted = true;
+      }
+    }
+
+    const updated = {
+      ownedSpecies: newOwned, energy: newEnergy, monsters: newMonsters,
+      lifetimeStats: newStats, achievements: newAch,
+      rosterSlots, freeRosterSlotsEarned, omnidexSlotBonusGranted,
+    };
     set(updated);
     saveGame({ ...s, ...updated });
   },
@@ -903,7 +936,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const newTier = result.newTier;
     const partialState = { ...s, dimensionLevel: newLevel, dimensionTier: newTier, energy: newEnergy };
     const alphaEntityUnlocked = s.alphaEntityUnlocked || checkAlphaUnlock(partialState);
-    const updated = { energy: newEnergy, dimensionLevel: newLevel, dimensionTier: newTier, alphaEntityUnlocked };
+
+    // Dimension milestone: +1 free roster slot every 5 levels up to D30 (max 6 free from this path)
+    let rosterSlots = s.rosterSlots;
+    let freeRosterSlotsEarned = s.freeRosterSlotsEarned;
+    if (newLevel % 5 === 0 && newLevel <= 30 && freeRosterSlotsEarned < 6) {
+      freeRosterSlotsEarned += 1;
+      rosterSlots = Math.min(60, rosterSlots + 1);
+    }
+
+    const updated = { energy: newEnergy, dimensionLevel: newLevel, dimensionTier: newTier, alphaEntityUnlocked, rosterSlots, freeRosterSlotsEarned };
     set(updated);
     saveGame({ ...s, ...updated });
     return result;
@@ -982,4 +1024,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   dismissTowerResult: () => set({ pendingTowerResult: null }),
+
+  // ── Roster IAP ────────────────────────────────────────────────────────────
+
+  dismissRosterFull: () => set({ rosterFullPending: false }),
+
+  expandRosterIAP: () => {
+    const s = get();
+    if (s.rosterPacksPurchased >= 15) return 'at_cap';
+    // In production this would validate an Apple/Google receipt server-side.
+    // Client-side we grant immediately (receipt validation is a server concern).
+    const newPacksPurchased = s.rosterPacksPurchased + 1;
+    const newRosterSlots = Math.min(60, s.rosterSlots + 3);
+    const updated = { rosterPacksPurchased: newPacksPurchased, rosterSlots: newRosterSlots };
+    set(updated);
+    saveGame({ ...s, ...updated });
+    return 'ok';
+  },
 }));

@@ -43,6 +43,10 @@ export function makeInitialState(): GameState {
     serverCycleSlots: [],
     alphaEntityUnlocked: false,
     towerState: makeInitialTowerState(),
+    rosterSlots: 6,
+    rosterPacksPurchased: 0,
+    freeRosterSlotsEarned: 0,
+    omnidexSlotBonusGranted: false,
   };
 }
 
@@ -109,6 +113,10 @@ export function loadGame(): GameState | null {
             highestEverFloor: parsed.towerState.highestEverFloor ?? 0,
           }
         : makeInitialTowerState(),
+      rosterSlots: parsed.rosterSlots ?? 6,
+      rosterPacksPurchased: parsed.rosterPacksPurchased ?? 0,
+      freeRosterSlotsEarned: parsed.freeRosterSlotsEarned ?? 0,
+      omnidexSlotBonusGranted: parsed.omnidexSlotBonusGranted ?? false,
     };
   } catch {
     return null;
