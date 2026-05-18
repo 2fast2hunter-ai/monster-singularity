@@ -52,13 +52,13 @@ export function MonsterPanel() {
   const decayWarning = depletedMs !== null && depletedMs >= 5 * 60 * 1000; // warn at 5 min
 
   return (
-    <section className="panel">
-      <h3 className="panel-title">Bio-Reactor Farm</h3>
+    <section className="panel" aria-labelledby="monster-panel-heading">
+      <h3 id="monster-panel-heading" className="panel-title">Bio-Reactor Farm</h3>
 
       {/* Instability Particle Meter */}
       <div className="ip-meter">
         <div className="ip-meter-header">
-          <span className="ip-label">⚡ Instability Particles</span>
+          <span className="ip-label"><span aria-hidden="true">⚡</span> Instability Particles</span>
           {!ipHintDismissed && (
             <button
               className="ip-hint-btn"
@@ -80,7 +80,14 @@ export function MonsterPanel() {
             )}
           </span>
         </div>
-        <div className="ip-bar-track">
+        <div
+          className="ip-bar-track"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={IP_CAPACITY}
+          aria-valuenow={Math.round(instabilityParticles)}
+          aria-label="Instability Particles"
+        >
           <div
             className={`ip-bar-fill${decayWarning ? ' ip-bar-warning' : ''}`}
             style={{ width: `${ipFill * 100}%` }}

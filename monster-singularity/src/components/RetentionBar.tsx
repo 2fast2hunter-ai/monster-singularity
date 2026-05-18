@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { formatDecayCountdown, DECAY_THRESHOLD_HOURS } from '../game/decayLogic';
+import { LoginCalendarModal } from './LoginCalendarModal';
 
 const STREAK_LENGTH = 30;
 const ECOSYSTEM_INTRO_KEY = 'ms_ecosystem_intro_seen';
@@ -15,6 +16,7 @@ export function RetentionBar() {
   const [countdown, setCountdown] = useState(() => formatDecayCountdown(decay.lastLoginTimestamp));
   const [ecosystemIntroSeen, setEcosystemIntroSeen] = useState(() => !!localStorage.getItem(ECOSYSTEM_INTRO_KEY));
   const [streakIntroSeen, setStreakIntroSeen] = useState(() => !!localStorage.getItem(STREAK_INTRO_KEY));
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   function dismissEcosystemIntro() {
     localStorage.setItem(ECOSYSTEM_INTRO_KEY, '1');
@@ -39,6 +41,8 @@ export function RetentionBar() {
 
   return (
     <>
+      {calendarOpen && <LoginCalendarModal onClose={() => setCalendarOpen(false)} />}
+
       {/* Decay event modal */}
       {decay.decayEventPending && (
         <div className="modal-backdrop">
@@ -90,7 +94,16 @@ export function RetentionBar() {
 
         {/* Streak tracker */}
         <div className="retention-block">
-          <span className="retention-label">Daily Streak</span>
+          <span className="retention-label">
+            Daily Streak
+            <button
+              className={`calendar-open-btn ${canClaim ? 'has-reward' : ''}`}
+              onClick={() => setCalendarOpen(true)}
+              title="View login calendar"
+            >
+              📅{canClaim && <span className="calendar-badge-dot" />}
+            </button>
+          </span>
           <span className="retention-value">
             Day {streak.streakCount}/{STREAK_LENGTH}
           </span>
@@ -104,7 +117,7 @@ export function RetentionBar() {
             ))}
           </div>
           {canClaim ? (
-            <button className="btn-streak-claim" onClick={claimDailyStreak}>
+            <button className="btn-streak-claim" onClick={() => setCalendarOpen(true)}>
               Claim Day {streak.streakCount + 1}
             </button>
           ) : (

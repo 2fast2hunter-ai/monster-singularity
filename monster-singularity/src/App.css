@@ -2868,3 +2868,54 @@ html, body { overflow-x: hidden; }
   margin-bottom: 16px;
   text-align: center;
 }
+
+/* Undo buffer banner */
+.tower-undo-banner {
+  position: relative;
+  background: var(--bg-panel);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 10px 14px;
+}
+
+.tower-undo-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  transition: width 50ms linear;
+  pointer-events: none;
+}
+
+.tower-undo-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tower-undo-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.tower-undo-btn {
+  flex-shrink: 0;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent-glow);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.tower-undo-btn:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}

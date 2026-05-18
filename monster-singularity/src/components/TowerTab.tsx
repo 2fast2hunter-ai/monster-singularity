@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { TOWER_FLOORS } from '../game/tower/towerFloors';
 import {
@@ -10,6 +10,9 @@ import {
   TOWER_MILESTONE_FLOORS,
 } from '../game/tower/towerLogic';
 import type { TowerAttemptResult } from '../game/tower/types';
+
+const UNDO_WINDOW_MS = 2000;
+const UNDO_TICK_MS = 50;
 
 function formatCountdown(ms: number): string {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -79,11 +82,35 @@ export function TowerTab() {
   const dismissTowerResult = useGameStore((s) => s.dismissTowerResult);
 
   const [countdown, setCountdown] = useState(() => getMsUntilNextReset());
+  const [pendingFloor, setPendingFloor] = useState<number | null>(null);
+  const [undoPct, setUndoPct] = useState(100);
+  const attemptTowerFloorRef = useRef(attemptTowerFloor);
+  attemptTowerFloorRef.current = attemptTowerFloor;
 
   useEffect(() => {
     const id = setInterval(() => setCountdown(getMsUntilNextReset()), 60_000);
     return () => clearInterval(id);
   }, []);
+
+  // Fire the action after the undo window expires
+  useEffect(() => {
+    if (pendingFloor === null) return;
+    const id = setTimeout(() => {
+      attemptTowerFloorRef.current(pendingFloor);
+      setPendingFloor(null);
+    }, UNDO_WINDOW_MS);
+    return () => clearTimeout(id);
+  }, [pendingFloor]);
+
+  // Drain the progress bar
+  useEffect(() => {
+    if (pendingFloor === null) return;
+    setUndoPct(100);
+    const id = setInterval(() => {
+      setUndoPct((prev) => Math.max(0, prev - (UNDO_TICK_MS / UNDO_WINDOW_MS) * 100));
+    }, UNDO_TICK_MS);
+    return () => clearInterval(id);
+  }, [pendingFloor]);
 
   const playerPower = calcPlayerPower(monsters);
   const currentFloor = getCurrentAttemptFloor(towerState);
@@ -92,6 +119,21 @@ export function TowerTab() {
     <div className="tower-tab">
       {pendingTowerResult && (
         <ResultModal result={pendingTowerResult} onClose={dismissTowerResult} />
+      )}
+
+      {pendingFloor !== null && (
+        <div className="tower-undo-banner">
+          <div className="tower-undo-bar" style={{ width: `${undoPct}%` }} />
+          <div className="tower-undo-content">
+            <span className="tower-undo-label">Challenging Floor {pendingFloor}…</span>
+            <button
+              className="tower-undo-btn"
+              onClick={() => setPendingFloor(null)}
+            >
+              Undo
+            </button>
+          </div>
+        </div>
       )}
 
       <div className="tower-header">
@@ -174,7 +216,8 @@ export function TowerTab() {
                 {status === 'current' && (
                   <button
                     className="btn-primary tower-challenge-btn"
-                    onClick={() => attemptTowerFloor(floorDef.floor)}
+                    disabled={pendingFloor !== null}
+                    onClick={() => setPendingFloor(floorDef.floor)}
                   >
                     Challenge
                   </button>
