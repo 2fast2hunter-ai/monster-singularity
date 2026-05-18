@@ -69,7 +69,7 @@ export function calcPlayerPower(monsters: Monster[]): number {
 export function resolveTowerAttempt(
   floor: number,
   playerPower: number,
-  monsters: Monster[],
+  _monsters: Monster[],
   towerState: TowerState,
   ownedSpecies: string[],
 ): {

@@ -10,7 +10,6 @@ const STREAK_INTRO_KEY = 'ms_streak_intro_seen';
 export function RetentionBar() {
   const decay = useGameStore((s) => s.decay);
   const streak = useGameStore((s) => s.streak);
-  const claimDailyStreak = useGameStore((s) => s.claimDailyStreak);
   const dismissDecayEvent = useGameStore((s) => s.dismissDecayEvent);
 
   const [countdown, setCountdown] = useState(() => formatDecayCountdown(decay.lastLoginTimestamp));

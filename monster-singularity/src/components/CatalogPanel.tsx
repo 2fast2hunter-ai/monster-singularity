@@ -5,7 +5,7 @@ import { DiscoveryFeed } from './DiscoveryFeed';
 import type { MonsterSpecies } from '../game/monster/types';
 import { formatNumber } from '../game/production';
 import { getCurrentDimensionStorm } from '../game/dimensionStorm';
-import { MonsterSprite } from './MonsterSprite';
+import { LazyMonsterSprite } from './LazyMonsterSprite';
 import type { StabilityClass } from '../game/monster/types';
 import type { RarityTier } from '../game/monster/types';
 
@@ -156,7 +156,7 @@ export function CatalogPanel() {
               onClick={() => setSelected(species)}
             >
               <div className="catalog-row-main">
-                <MonsterSprite
+                <LazyMonsterSprite
                   stabilityClass={species.stabilityClass as StabilityClass}
                   rarity={species.rarityTier as RarityTier}
                   monsterId={species.id}
@@ -220,7 +220,7 @@ export function CatalogPanel() {
         <div className="catalog-detail-backdrop" onClick={() => setSelected(null)}>
           <div className="catalog-detail" onClick={(e) => e.stopPropagation()}>
             <div className="catalog-detail-header">
-              <MonsterSprite
+              <LazyMonsterSprite
                 stabilityClass={selected.stabilityClass as StabilityClass}
                 rarity={selected.rarityTier as RarityTier}
                 monsterId={selected.id}

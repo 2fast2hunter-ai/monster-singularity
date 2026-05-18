@@ -5,7 +5,6 @@ import {
   getMsUntilNextReset,
   getCurrentAttemptFloor,
   calcPlayerPower,
-  TOWER_BADGES,
   TOWER_ENERGY_REWARDS,
   TOWER_MILESTONE_FLOORS,
 } from '../game/tower/towerLogic';

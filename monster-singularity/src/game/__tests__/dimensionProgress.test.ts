@@ -18,7 +18,7 @@ import type { GameState } from '../types';
 
 // Minimal GameState factory for tests
 function makeState(overrides: Partial<GameState> = {}): GameState {
-  const base: GameState = {
+  const base = {
     energy: 0,
     totalEnergyProduced: 0,
     lastSaveTimestamp: 0,
@@ -29,7 +29,7 @@ function makeState(overrides: Partial<GameState> = {}): GameState {
     offlineCatchupCapHours: 48,
     dimensionStorm: null,
     ownedSpecies: [],
-    streak: { streakCount: 0, lastClaimDate: null, geneFragmentGranted: false },
+    streak: { streakCount: 0, lastClaimDate: null, geneFragmentGranted: false, survivorBadge: false },
     decay: { lastLoginTimestamp: 0, decayEventPending: false, decayConsumedSpecies: [], decaySurvivingCount: 0 },
     auction: { weekNumber: -1, playerBid: null, bidPlacedAt: null },
     gacha: { totalPulls: 0, pityCount: 0 },
@@ -50,8 +50,11 @@ function makeState(overrides: Partial<GameState> = {}): GameState {
     dimensionTier: 1,
     serverCycleSlots: [],
     alphaEntityUnlocked: false,
+    towerState: { weeklyFloor: 0, highestEverFloor: 0, lastWeeklyReset: 0, permanentBadges: [], weeklyRewardsClaimed: [], lastAttemptResult: null },
+    rosterSlots: 6,
+    rosterPacksPurchased: 0,
     ...overrides,
-  };
+  } as GameState;
   return base;
 }
 
@@ -138,7 +141,7 @@ describe('checkAlphaUnlock', () => {
 
   it('all prerequisites met → true', () => {
     const state = makeState({
-      streak: { streakCount: 1_000, lastClaimDate: '2026-01-01', geneFragmentGranted: true },
+      streak: { streakCount: 1_000, lastClaimDate: '2026-01-01', geneFragmentGranted: true, survivorBadge: false },
       dimensionLevel: 50,
       dimensionTier: 11,
       ownedSpecies: maxOwned,
@@ -148,7 +151,7 @@ describe('checkAlphaUnlock', () => {
 
   it('streak < 1000 → false', () => {
     const state = makeState({
-      streak: { streakCount: 999, lastClaimDate: '2026-01-01', geneFragmentGranted: true },
+      streak: { streakCount: 999, lastClaimDate: '2026-01-01', geneFragmentGranted: true, survivorBadge: false },
       dimensionLevel: 50,
       dimensionTier: 11,
       ownedSpecies: maxOwned,
@@ -158,7 +161,7 @@ describe('checkAlphaUnlock', () => {
 
   it('dimensionLevel < 50 → false', () => {
     const state = makeState({
-      streak: { streakCount: 1_000, lastClaimDate: '2026-01-01', geneFragmentGranted: true },
+      streak: { streakCount: 1_000, lastClaimDate: '2026-01-01', geneFragmentGranted: true, survivorBadge: false },
       dimensionLevel: 49,
       dimensionTier: 11,
       ownedSpecies: maxOwned,
@@ -168,7 +171,7 @@ describe('checkAlphaUnlock', () => {
 
   it('OmniDex < 97% → false', () => {
     const state = makeState({
-      streak: { streakCount: 1_000, lastClaimDate: '2026-01-01', geneFragmentGranted: true },
+      streak: { streakCount: 1_000, lastClaimDate: '2026-01-01', geneFragmentGranted: true, survivorBadge: false },
       dimensionLevel: 50,
       dimensionTier: 11,
       ownedSpecies: Array.from({ length: 4_000 }, (_, i) => `sp-${i}`),
@@ -205,9 +208,9 @@ describe('currentConditions', () => {
   });
 
   it('detects streak milestones', () => {
-    const state365 = makeState({ streak: { streakCount: 365, lastClaimDate: null, geneFragmentGranted: false } });
+    const state365 = makeState({ streak: { streakCount: 365, lastClaimDate: null, geneFragmentGranted: false, survivorBadge: false } });
     expect(currentConditions(state365)).toContain('streak_exact_365');
-    const state500 = makeState({ streak: { streakCount: 500, lastClaimDate: null, geneFragmentGranted: false } });
+    const state500 = makeState({ streak: { streakCount: 500, lastClaimDate: null, geneFragmentGranted: false, survivorBadge: false } });
     expect(currentConditions(state500)).toContain('streak_exact_500');
   });
 
